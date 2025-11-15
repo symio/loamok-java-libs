@@ -87,7 +87,7 @@ publishing {
             pom {
                 name = 'Loamok Spring Security'
                 description = 'OAuth2 JWT Authentication library for Spring Boot'
-                url = 'https://github.com/symio/loamok-spring-security'
+                url = 'https://github.com/symio/loamok-java-libs'
                 
                 licenses {
                     license {
@@ -116,7 +116,7 @@ publishing {
     repositories {
         maven {
             name = 'GitHubPackages'
-            url = uri("https://maven.pkg.github.com/symio/loamok-spring-security")
+            url = uri("https://maven.pkg.github.com/symio/loamok-java-libs")
             credentials {
                 username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
                 password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
