@@ -1,0 +1,22 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.springframework.boot' version '3.5.5' apply false
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org.loamok.libs'
+version = '1.0.0-SNAPSHOT'
+description = 'Librairies Java Loamok'
+allprojects {
+
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+}
