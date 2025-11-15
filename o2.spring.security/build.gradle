@@ -35,21 +35,21 @@ repositories {
 
 dependencies {
     // Spring Boot Starters (provided par le projet consommateur)
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compileOnly 'org.springframework.boot:spring-boot-starter-mail'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-rest'
+    compileOnly 'org.springframework.boot:spring-boot-starter-security'
+    compileOnly 'org.springframework.boot:spring-boot-starter-validation'
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
     
     // Configuration processor pour les proprietes
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     
     // JWT
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.7'
+    api 'io.jsonwebtoken:jjwt-api:0.12.7'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.7'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.7'
-    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+    api 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
     
     // Jackson pour Hibernate
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
@@ -66,7 +66,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
 
     // swagger v3 (openApi)
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12'
+    compileOnly 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12'
 }
 
 // Configuration de la compilation Java
