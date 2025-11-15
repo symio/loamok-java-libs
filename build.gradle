@@ -6,7 +6,6 @@ plugins {
 }
 
 group = 'org.loamok.libs'
-version = '1.0.0-SNAPSHOT'
 description = 'Librairies Java Loamok'
 allprojects {
 
