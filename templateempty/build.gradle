@@ -7,7 +7,6 @@ plugins {
 }
 
 // --- Infos UNIQUES à cette lib ---
-group = 'org.loamok.libs.template' // À CHANGER
 version = '1.0.0-SNAPSHOT'
 description = 'Description de ma nouvelle lib' // À CHANGER
 // --- Fin des infos uniques ---
