@@ -1,21 +1,130 @@
+// (org.loamok.libs/build.gradle)
+
 plugins {
-    id 'java-library'
-    id 'maven-publish'
+    // Ces plugins ne sont ici que pour gérer les versions
+    // 'apply false' signifie "ne l'applique pas à la racine,
+    // mais rend-le dispo pour les sous-projets"
     id 'org.springframework.boot' version '3.5.5' apply false
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
 group = 'org.loamok.libs'
 description = 'Librairies Java Loamok'
+
 allprojects {
-
-
+    // Commun à tous (racine + sous-projets)
     repositories {
         mavenCentral()
     }
 }
 
+// ===================================================================
+// C'est ici que la magie opère :
+// Appliquer tout ce qui est commun à TOUS les sous-projets de libs
+// ===================================================================
 subprojects {
-    apply plugin: 'java'
+    // 1. Appliquer les plugins de base pour une lib
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.spring.dependency-management'
 
+    // 2. Gérer la version du Java
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    // 3. Gérer la gestion des dépendances Spring (BOM)
+    dependencyManagement {
+        imports {
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+    
+    // 4. Gérer Lombok (Configurations)
+    configurations {
+        compileOnly
+        annotationProcessor
+    }
+
+    // 5. Gérer les dépendances communes (Lombok !)
+    // Plus besoin de le mettre dans les sous-projets
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.38'
+        annotationProcessor 'org.projectlombok:lombok:1.18.38'
+        
+        testCompileOnly 'org.projectlombok:lombok:1.18.38'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+    }
+
+    // 6. Gérer les tâches de compilation et test communes
+    tasks.withType(JavaCompile).configureEach {
+        options.annotationProcessorPath = configurations.annotationProcessor
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
+    // 7. Gérer Javadoc 
+    // On utilise withType pour l'appliquer à toutes les tâches Javadoc
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:all,-missing', '-quiet')
+    }
+
+    // 8. Gérer les JARs (désactiver bootJar)
+    tasks.named('jar') {
+        enabled = true
+        dependsOn classes
+    }
+    tasks.whenTaskAdded { task ->
+        if (task.name == 'bootJar') {
+            task.enabled = false
+        }
+    }
+
+    // 9. Gérer la PUBLICATION 
+    publishing {
+        // Le dépôt est le même pour tout le monde
+        repositories {
+            maven {
+                name = 'GitHubPackages'
+                url = uri("https://maven.pkg.github.com/symio/loamok-java-libs")
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+        
+        // Le "template" du POM est le même
+        publications {
+            withType(MavenPublication) { // Applique ceci à toutes les publications
+                pom {
+                    url = 'https://github.com/symio/loamok-java-libs'
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = 'https://opensource.org/licenses/MIT'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'symio'
+                            name = 'Huby Franck'
+                            email = 'franck.huby@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/symio/loamok-java-libs.git'
+                        developerConnection = 'scm:git:ssh://github.com/symio/loamok-java-libs.git'
+                        url = 'https://github.com/symio/loamok-java-libs'
+                    }
+                }
+            }
+        }
+    }
 }

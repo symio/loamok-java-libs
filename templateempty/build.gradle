@@ -1,0 +1,34 @@
+// (template/build.gradle)
+
+// Les plugins sont déjà appliqués par la racine.
+// On garde 'spring-boot' pour ses fonctionnalités (si besoin).
+plugins {
+    id 'org.springframework.boot' version '3.5.5' apply false
+}
+
+// --- Infos UNIQUES à cette lib ---
+group = 'org.loamok.libs.template' // À CHANGER
+version = '1.0.0-SNAPSHOT'
+description = 'Description de ma nouvelle lib' // À CHANGER
+// --- Fin des infos uniques ---
+
+// --- Dépendances UNIQUES à cette lib ---
+dependencies {
+    // ex: implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+// --- Fin des dépendances uniques ---
+
+// --- Publication UNIQUE à cette lib ---
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            
+            // Le seul bout du POM qui est unique
+            pom {
+                name = 'Nom Humain de la Lib' // À CHANGER
+                description = project.description // Récupère la description du haut
+            }
+        }
+    }
+}
