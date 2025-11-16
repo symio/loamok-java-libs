@@ -9,8 +9,10 @@ import java.util.Objects;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.loamok.libs.o2springsecurity.config.LoamokSecurityProperties;
 import org.loamok.libs.o2springsecurity.dto.email.constants.EmailMessageConstants;
 import org.loamok.libs.o2springsecurity.dto.email.constants.RegisterEmailConstants;
 import org.loamok.libs.o2springsecurity.dto.email.constants.ResetChallengeConstants;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Service;
  * @author Huby Franck
  */
 @Service
+@RequiredArgsConstructor
 public class UserManager implements UserService {
 
     /**
@@ -47,16 +50,12 @@ public class UserManager implements UserService {
     private static final Pattern PATTERN = Pattern.compile(PASSWORD_PATTERN);
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Autowired
-    private EmailMessage messageGetter;
-    @Autowired
-    private UserRepository uR;
-    @Autowired
-    private RoleRepository rR;
-    @Autowired
-    private ClientSignatureUtil csb;
-    @Autowired
-    private EmailService emailManager;
+    private final EmailMessage messageGetter;
+    private final UserRepository uR;
+    private final RoleRepository rR;
+    private final ClientSignatureUtil csb;
+    private final EmailService emailManager;
+    private final LoamokSecurityProperties securityProperties;
 
     @Override
     @Transactional
@@ -235,7 +234,7 @@ public class UserManager implements UserService {
                         substitutions
                 );
                 String statusAdmin = emailManager.sendSimpleMail(EmailDetails.builder()
-                        .recipient("admin@loamok.org")
+                        .recipient(securityProperties.getEmail().getAdminEmail())
                         .subject(title)
                         .msgBody(messageAdmin)
                         .build());
@@ -303,7 +302,7 @@ public class UserManager implements UserService {
                         substitutions
                 );
                 String statusAdmin = emailManager.sendSimpleMail(EmailDetails.builder()
-                        .recipient("admin@loamok.org")
+                        .recipient(securityProperties.getEmail().getAdminEmail())
                         .subject(title)
                         .msgBody(messageAdmin)
                         .build());
@@ -438,7 +437,10 @@ public class UserManager implements UserService {
         u.setEmailVerificationKey(urlSafeSignature);
 
         Instant actualDate = Instant.now();
-        u.setKeyValidity(Date.from(actualDate.plus(Duration.ofHours(1))).toInstant());
+        
+        // Utilise la config au lieu de 1 heure en dur
+        int keyValidityHours = securityProperties.getEmail().getKeyValidityHours();
+        u.setKeyValidity(Date.from(actualDate.plus(Duration.ofHours(keyValidityHours))).toInstant());
 
         String separator = EmailMessageConstants.EMAIL_MESSAGE_SUBSTITUTION_SEPARATOR;
         message = message.replace(separator + "EMAIL_VERIFICATION_KEY" + separator, u.getEmailVerificationKey());

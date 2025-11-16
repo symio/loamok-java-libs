@@ -1,0 +1,166 @@
+# Fichier de configuration d'exemple pour o2springsecurity
+# Copiez ce fichier vers application.yml et adaptez les valeurs
+
+# ============================================================
+# CONFIGURATION LOAMOK SECURITY (Proprietes de la bibliotheque)
+# ============================================================
+loamok:
+  security:
+    # Configuration JWT
+    jwt:
+      # OBLIGATOIRE : Cle secrete encodee en base64
+      # Generation : echo -n "VotreSecretTresLongEtAleatoire" | base64
+      secret: ${JWT_SECRET:VGhpc0lzQURldkp3dFNlY3JldEZvckxvY2FsVGVzdGluZ09ubHkxMjM0NQ==}
+      
+      # Duree de validite du token d'acces en heures (defaut: 24)
+      access-token-expiration-hours: 24
+      
+      # Duree de validite du token remember-me en jours (defaut: 365)
+      remember-me-token-expiration-days: 365
+      
+      # Duree de validite du token stocke serveur en heures (defaut: 2)
+      stored-token-expiration-hours: 2
+    
+    # Configuration CORS
+    cors:
+      # OBLIGATOIRE : Origines autorisees (separees par virgules)
+      allowed-origins: ${CORS_ORIGINS:http://localhost:4200,http://localhost:8080}
+      
+      # Methodes HTTP autorisees
+      allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+      
+      # Headers autorises (* pour tous)
+      allowed-headers: "*"
+      
+      # Autoriser les credentials (cookies, headers auth)
+      allow-credentials: true
+      
+      # Duree du cache preflight en secondes
+      max-age: 3600
+    
+    # Configuration Email
+    email:
+      # OBLIGATOIRE : URL de base pour les liens dans les emails
+      # URL de base du FRONTEND pour les liens dans les emails
+      # Exemple: Si base-url=http://localhost:4200, les liens seront:
+      # - http://localhost:4200/register/activate?key=xxx
+      # - http://localhost:4200/register/password-lost2?key=xxx
+      base-url: ${BASE_URL:http://localhost:4200}
+      
+      # OBLIGATOIRE : Email administrateur pour notifications
+      admin-email: ${ADMIN_EMAIL:admin@example.com}
+      
+      # Duree de validite des cles d'activation email en heures (defaut: 1)
+      key-validity-hours: 1
+    
+    # Configuration des endpoints
+    endpoints:
+      # Chemin de base pour les endpoints d'authentification
+      auth-base-path: /authorize
+      
+      # Chemin de base pour les endpoints d'enregistrement
+      register-base-path: /register
+      
+      # Activer le logging detaille des requetes
+      enable-request-logging: false
+
+# ============================================================
+# CONFIGURATION SPRING BOOT (Dependances externes OBLIGATOIRES)
+# ============================================================
+spring:
+  # Configuration base de donnees (OBLIGATOIRE)
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/myapp}
+    username: ${SPRING_DATASOURCE_USERNAME:dbuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:dbpassword}
+    
+    # Configuration pool de connexions (optionnel mais recommande)
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 600000
+  
+  # Configuration JPA/Hibernate (OBLIGATOIRE)
+  jpa:
+    # Mode de creation/mise a jour du schema
+    # - create-drop : Recree le schema a chaque demarrage (dev uniquement)
+    # - update : Met a jour le schema automatiquement (dev/test)
+    # - validate : Verifie le schema sans le modifier (production)
+    # - none : Pas de gestion automatique (production avec migrations)
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    
+    # Afficher les requetes SQL dans les logs (dev uniquement)
+    show-sql: false
+    
+    # Proprietes Hibernate
+    properties:
+      hibernate:
+        # Dialecte base de donnees (auto-detecte generalement)
+        # dialect: org.hibernate.dialect.MariaDBDialect
+        
+        # Formater les requetes SQL dans les logs
+        format-sql: true
+        
+        # Desactiver l'Open Session In View (recommande)
+        open-in-view: false
+  
+  # Configuration serveur mail (OBLIGATOIRE pour envoyer des emails)
+  mail:
+    # Serveur SMTP
+    host: ${SPRING_MAIL_HOST:smtp.example.com}
+    
+    # Port SMTP (587 pour STARTTLS, 465 pour SSL, 25 pour non-securise)
+    port: ${SPRING_MAIL_PORT:587}
+    
+    # Identifiant compte SMTP (utilise aussi comme adresse expediteur par defaut)
+    username: ${SPRING_MAIL_USERNAME:noreply@example.com}
+    
+    # Mot de passe compte SMTP
+    password: ${SPRING_MAIL_PASSWORD:mailpassword}
+    
+    # Proprietes SMTP avancees
+    properties:
+      mail:
+        smtp:
+          # Activer l'authentification SMTP
+          auth: true
+          
+          # Activer STARTTLS pour securiser la connexion
+          starttls.enable: true
+          
+          # Timeout de connexion en millisecondes (optionnel)
+          # connectiontimeout: 5000
+          
+          # Timeout d'ecriture en millisecondes (optionnel)
+          # timeout: 5000
+
+# ============================================================
+# CONFIGURATION ADDITIONNELLE (Optionnel)
+# ============================================================
+
+# Configuration serveur
+server:
+  # Port d'ecoute
+  port: ${SERVER_PORT:8080}
+  
+  # Contexte de l'application
+  # servlet:
+  #   context-path: /api
+
+# Configuration Swagger/OpenAPI (optionnel)
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:false}
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:false}
+
+# Configuration logging (optionnel)
+logging:
+  level:
+    root: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.loamok.libs.o2springsecurity: DEBUG

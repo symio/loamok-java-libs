@@ -7,6 +7,7 @@ import org.loamok.libs.o2springsecurity.manager.UserService;
 import org.loamok.libs.o2springsecurity.repository.RoleRepository;
 import org.loamok.libs.o2springsecurity.repository.UserRepository;
 import org.loamok.libs.o2springsecurity.LoggingFilter;
+import org.loamok.libs.o2springsecurity.dto.email.interfaces.EmailMessage;
 import org.loamok.libs.o2springsecurity.jwt.JwtService;
 import org.loamok.libs.o2springsecurity.jwt.JwtServiceImpl;
 import org.loamok.libs.o2springsecurity.oauth2.OAuth2Service;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -96,6 +98,7 @@ public class SecurityAutoConfiguration {
      * @param userRepository UserRepository
      * @param passwordEncoder org.springframework.security.crypto.password.PasswordEncoder
      * @param jwtService JwtService
+     * @param securityProperties classe de configuration
      * @return Oauth2Service
      */
     @Bean
@@ -103,38 +106,51 @@ public class SecurityAutoConfiguration {
     public OAuth2Service oauth2Service(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            JwtService jwtService) {
-        return new OAuth2ServiceImpl(userRepository, passwordEncoder, jwtService);
+            JwtService jwtService,
+            LoamokSecurityProperties securityProperties
+    ) {
+        return new OAuth2ServiceImpl(userRepository, passwordEncoder, jwtService, securityProperties);
     }
 
     /**
      * Email manager
      * 
+     * @param javaMailSender Service Spring Mail pour l'envoi d'emails
+     * @param securityProperties Configuration de la bibliotheque
      * @return EmailService
      */
     @Bean
     @ConditionalOnMissingBean
-    public EmailService emailService() {
-        return new EmailManager();
+    public EmailService emailService(JavaMailSender javaMailSender, LoamokSecurityProperties securityProperties) {
+        return new EmailManager(javaMailSender, securityProperties);
     }
 
     /**
      * User service
      * 
+     * @param messageGetter EmailMessage
      * @param userRepository UserRepository
      * @param roleRepository RoleRepository
      * @param clientSignatureUtil ClientSignatureUtil
      * @param emailService EmailService
+     * @param securityProperties Configuration de la bibliotheque
      * @return UserService
      */
     @Bean
     @ConditionalOnMissingBean
     public UserService userService(
+            EmailMessage messageGetter,
             UserRepository userRepository,
             RoleRepository roleRepository,
             ClientSignatureUtil clientSignatureUtil,
-            EmailService emailService) {
-        return new UserManager();
+            EmailService emailService,
+            LoamokSecurityProperties securityProperties
+    ) {
+        return new UserManager(
+            messageGetter, userRepository,
+            roleRepository, clientSignatureUtil,
+            emailService, securityProperties
+        );
     }
 
     /**

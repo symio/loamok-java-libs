@@ -1,0 +1,48 @@
+name: Cleanup Old Packages
+
+on:
+  # Nettoyage automatique après chaque publication
+  workflow_run:
+    workflows: ["Publish Package"]
+    types:
+      - completed
+  
+  # Nettoyage manuel si besoin
+  workflow_dispatch:
+  
+  # Nettoyage hebdomadaire
+  schedule:
+    - cron: '0 2 * * 0'  # Tous les dimanches à 2h du matin
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Delete old SNAPSHOT versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'org.loamok.libs.o2springsecurity'
+          package-type: 'maven'
+          # Garde les 2 dernières versions SNAPSHOT
+          min-versions-to-keep: 3
+          # Ne supprime que les SNAPSHOT
+          version-pattern: '.*-SNAPSHOT$'
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Delete old stable versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'org.loamok.libs.o2springsecurity'
+          package-type: 'maven'
+          # Garde la dernière version stable
+          min-versions-to-keep: 2
+          # Ne supprime que les versions stables (sans -SNAPSHOT)
+          version-pattern: '^(?!.*-SNAPSHOT).*$'
+          token: ${{ secrets.GITHUB_TOKEN }}
