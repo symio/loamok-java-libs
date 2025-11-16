@@ -22,6 +22,21 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+
+            // ===============================================
+            // AJOUT DE SÉCURITÉ :
+            // Forcer les coordonnées, au lieu de juste
+            // faire confiance à "from components.java"
+            
+            // 'project.group' va hériter 'org.loamok.libs' du parent
+            group = rootProject.group 
+            
+            // 'project.name' va prendre le nom du dossier : 'o2springsecurity'
+            artifactId = project.name 
+            
+            // 'project.version' va prendre '1.0.0-SNAPSHOT'
+            version = project.version 
+            // ===============================================
             
             // Le seul bout du POM qui est unique
             pom {
