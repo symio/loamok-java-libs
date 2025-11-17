@@ -19,7 +19,7 @@ import javax.crypto.SecretKey;
 @Service
 public class JwtServiceImpl implements JwtService {
 
-    @Value("${app.jwt.secret}")
+    @Value("${loamok.security.jwt.secret}")
     private String SECRET_KEY;
 
     // Signature transmise pour la création du jeton.
