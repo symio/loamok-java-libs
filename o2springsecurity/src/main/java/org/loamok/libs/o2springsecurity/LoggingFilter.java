@@ -1,7 +1,9 @@
-package org.loamok.libs.o2springsecurity; 
+package org.loamok.libs.o2springsecurity;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.loamok.libs.o2springsecurity.config.LoamokSecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,18 +16,14 @@ import java.util.Collections;
  * @author Huby Franck
  */
 @Component
+@RequiredArgsConstructor
 public class LoggingFilter implements Filter {
-    /**
-     * Constructeur par défaut
-     */
-    public LoggingFilter() {
-        super();
-    }
-
+    
     /**
      * Logger logger logger actif
      */
     private static final Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
+    private final LoamokSecurityProperties securityProperties;
 
     /**
      * Filtre actif
@@ -39,14 +37,14 @@ public class LoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-
-        // On log seulement au début d'une requête API pour ne pas surcharger
-        if (httpRequest.getRequestURI().startsWith("/todo/")) {
+        
+        if (securityProperties.getEndpoints().isEnableRequestLogging()) {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            
             logger.info("================ INCOMING REQUEST ================");
             logger.info("Request URI: {} {}", httpRequest.getMethod(), httpRequest.getRequestURI());
             Collections.list(httpRequest.getHeaderNames()).forEach(headerName ->
-                    logger.info("Header -> {}: {}", headerName, httpRequest.getHeader(headerName))
+                logger.info("Header -> {}: {}", headerName, httpRequest.getHeader(headerName))
             );
             logger.info("==================================================");
         }

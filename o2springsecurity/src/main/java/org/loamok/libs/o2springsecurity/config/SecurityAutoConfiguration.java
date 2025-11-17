@@ -40,15 +40,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @AutoConfiguration
 @ConditionalOnClass({EnableWebSecurity.class, JwtServiceImpl.class})
 @EnableConfigurationProperties(LoamokSecurityProperties.class)
-@ComponentScan(basePackages = {
-    "org.loamok.libs.o2.spring.security",
-    "org.loamok.libs.o2springsecurity.dto.email",
-    "org.loamok.libs.o2springsecurity.dto.request",
-    "org.loamok.libs.o2springsecurity.dto.response",
-    "org.loamok.libs.o2springsecurity.manager",
-    "org.loamok.libs.o2springsecurity.util",
-    "org.loamok.libs.o2springsecurity.web",
-})
+@ComponentScan(
+    basePackages = {
+        "org.loamok.libs.o2.spring.security",
+        "org.loamok.libs.o2springsecurity.dto.email",
+        "org.loamok.libs.o2springsecurity.dto.request",
+        "org.loamok.libs.o2springsecurity.dto.response",
+        "org.loamok.libs.o2springsecurity.manager",
+        "org.loamok.libs.o2springsecurity.util",
+        "org.loamok.libs.o2springsecurity.web",
+    }
+)
 @EnableJpaRepositories(basePackages = "org.loamok.libs.o2springsecurity.repository")
 @EntityScan(basePackages = "org.loamok.libs.o2springsecurity.entity")
 @Import({
@@ -104,10 +106,10 @@ public class SecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public OAuth2Service oauth2Service(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            JwtService jwtService,
-            LoamokSecurityProperties securityProperties
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder,
+        JwtService jwtService,
+        LoamokSecurityProperties securityProperties
     ) {
         return new OAuth2ServiceImpl(userRepository, passwordEncoder, jwtService, securityProperties);
     }
@@ -139,12 +141,12 @@ public class SecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public UserService userService(
-            EmailMessage messageGetter,
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            ClientSignatureUtil clientSignatureUtil,
-            EmailService emailService,
-            LoamokSecurityProperties securityProperties
+        EmailMessage messageGetter,
+        UserRepository userRepository,
+        RoleRepository roleRepository,
+        ClientSignatureUtil clientSignatureUtil,
+        EmailService emailService,
+        LoamokSecurityProperties securityProperties
     ) {
         return new UserManager(
             messageGetter, userRepository,
@@ -156,12 +158,13 @@ public class SecurityAutoConfiguration {
     /**
      * Filtre de journalisation
      * 
+     * @param securityProperties Configuration de la bibliotheque
      * @return LoggingFilter
      */
     @Bean
     @ConditionalOnMissingBean
-    public LoggingFilter loggingFilter() {
-        return new LoggingFilter();
+    public LoggingFilter loggingFilter(LoamokSecurityProperties securityProperties) {
+        return new LoggingFilter(securityProperties);
     }
 
     /**
@@ -175,9 +178,10 @@ public class SecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthenticationController authenticationController(
-            OAuth2Service oauth2Service,
-            ClientSignatureUtil clientSignatureUtil,
-            JwtService jwtService) {
+        OAuth2Service oauth2Service,
+        ClientSignatureUtil clientSignatureUtil,
+        JwtService jwtService
+    ) {
         return new AuthenticationController(oauth2Service, clientSignatureUtil, jwtService);
     }
 

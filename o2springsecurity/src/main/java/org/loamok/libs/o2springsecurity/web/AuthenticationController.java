@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Huby Franck
  */
 @RestController
-@RequestMapping("/authorize")
+@RequestMapping("${loamok.security.endpoints.auth-base-path:/authorize}")
 @AllArgsConstructor
 public class AuthenticationController {
 
@@ -51,42 +51,44 @@ public class AuthenticationController {
      * @return une tokenResponse
      */
     @Operation(
-            summary = "Obtenir un token d'accès OAuth2",
-            description = "Authentifie un client via le flow Client Credentials et retourne un JWT access_token",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Paramètres OAuth2 au format application/x-www-form-urlencoded",
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-                            schema = @Schema(implementation = TokenRequest.class)
-                    )
+        summary = "Obtenir un token d'accès OAuth2",
+        description = "Authentifie un client via le flow Client Credentials et retourne un JWT access_token",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Paramètres OAuth2 au format application/x-www-form-urlencoded",
+            required = true,
+            content = @Content(
+                mediaType = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                schema = @Schema(implementation = TokenRequest.class)
             )
+        )
     )
     @ApiResponses(value = {
         @ApiResponse(
-                responseCode = "200",
-                description = "Token généré avec succès",
-                content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(implementation = TokenResponse.class)
-                )
+            responseCode = "200",
+            description = "Token généré avec succès",
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = TokenResponse.class)
+            )
         ),
         @ApiResponse(
-                responseCode = "400",
-                description = "Paramètres manquants ou invalides"
+            responseCode = "400",
+            description = "Paramètres manquants ou invalides"
         ),
         @ApiResponse(
-                responseCode = "401",
-                description = "Client ID ou secret invalide"
+            responseCode = "401",
+            description = "Client ID ou secret invalide"
         )
     })
-    @PostMapping(value = "/token",
-            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+        value = "/token",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<Map<String, Object>> oauth2Token(
-            @Parameter(description = "Données d'authentification OAuth2", required = true)
-            @Valid TokenRequest tokenRequest,
-            HttpServletRequest request
+        @Parameter(description = "Données d'authentification OAuth2", required = true)
+        @Valid TokenRequest tokenRequest,
+        HttpServletRequest request
     ) {
         String grantType = tokenRequest.getGrant_type();
         String clientId = tokenRequest.getClient_id();
@@ -96,16 +98,16 @@ public class AuthenticationController {
         // Validation du grant type
         if (!"client_credentials".equals(grantType)) {
             return ResponseEntity.badRequest().body(Map.of(
-                    "error", "unsupported_grant_type",
-                    "error_description", "Grant type must be client_credentials"
+                "error", "unsupported_grant_type",
+                "error_description", "Grant type must be client_credentials"
             ));
         }
 
         // Validation des paramètres
         if (clientId == null || clientSecret == null) {
             return ResponseEntity.badRequest().body(Map.of(
-                    "error", "invalid_request",
-                    "error_description", "client_id and client_secret are required"
+                "error", "invalid_request",
+                "error_description", "client_id and client_secret are required"
             ));
         }
 
@@ -115,8 +117,8 @@ public class AuthenticationController {
 
         if (tokenOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                    "error", "invalid_client",
-                    "error_description", "Invalid client credentials or unauthorized scopes or disabled client"
+                "error", "invalid_client",
+                "error_description", "Invalid client credentials or unauthorized scopes or disabled client"
             ));
         }
 
@@ -144,56 +146,60 @@ public class AuthenticationController {
      * @return une tokenResponse
      */
     @Operation(
-            summary = "Rafraîchir un token d'accès via un access_token non expiré",
-            description = "Permet de générer un nouveau `auth stored_token` OAuth2 à partir d'un `auth_access_token` précédemment émis.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Objet JSON contenant le remember_me_token",
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = RememberedTokenRequest.class)
-                    )
+        summary = "Rafraîchir un token d'accès via un access_token non expiré",
+        description = "Permet de générer un nouveau `auth stored_token` OAuth2 à partir d'un `auth_access_token` précédemment émis.",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Objet JSON contenant le remember_me_token",
+            required = true,
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = RememberedTokenRequest.class)
             )
+        )
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @ApiResponses(
+        value = {
+            @ApiResponse(
                 responseCode = "200",
                 description = "Token généré avec succès",
                 content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(implementation = TokenResponse.class)
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = TokenResponse.class)
                 )
-        ),
-        @ApiResponse(
+            ),
+            @ApiResponse(
                 responseCode = "400",
                 description = "Paramètres manquants ou invalides",
                 content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(
-                                type = "object",
-                                example = "{ \"error\": \"invalid_request\", \"error_description\": \"client_id and client_secret are required\" }"
-                        )
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                        type = "object",
+                        example = "{ \"error\": \"invalid_request\", \"error_description\": \"client_id and client_secret are required\" }"
+                    )
                 )
-        ),
-        @ApiResponse(
+            ),
+            @ApiResponse(
                 responseCode = "401",
                 description = "Token invalide",
                 content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(
-                                type = "object",
-                                example = "{ \"error\": \"invalid_client\", \"error_description\": \"Invalid client credentials or unauthorized scopes or disabled client\" }"
-                        )
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                        type = "object",
+                        example = "{ \"error\": \"invalid_client\", \"error_description\": \"Invalid client credentials or unauthorized scopes or disabled client\" }"
+                    )
                 )
-        )
-    })
-    @PostMapping(value = "/refresh",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            )
+        }
+    )
+    @PostMapping(
+        value = "/refresh",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<Map<String, Object>> oauth2Refresh(
-            @Parameter(description = "Objet contenant le auth_token valide", required = true)
-            @Valid @RequestBody RememberedTokenRequest rememberedTokenRequest,
-            HttpServletRequest request
+        @Parameter(description = "Objet contenant le auth_token valide", required = true)
+        @Valid @RequestBody RememberedTokenRequest rememberedTokenRequest,
+        HttpServletRequest request
     ) {
         try {
             Claims claims = jwtService.extractAllClaims(rememberedTokenRequest.getRememberMeToken());
@@ -207,10 +213,12 @@ public class AuthenticationController {
             return oauth2Token(tokenRequest, request);
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
+            return ResponseEntity.badRequest().body(
+                Map.of(
                     "error", "invalid_request",
                     "error_description", "remember_me_token manquant ou invalide - " + e.getMessage()
-            ));
+                )
+            );
         }
     }
 
@@ -222,38 +230,41 @@ public class AuthenticationController {
      * @return une tokenResponse
      */
     @Operation(
-            summary = "Rafraîchir un token d'accès via un remember_me_token",
-            description = "Permet d'obtenir un nouveau `access_token` OAuth2 à partir d'un `remember_me_token` précédemment émis.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Objet JSON contenant le remember_me_token",
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = RememberedTokenRequest.class)
-                    )
+        summary = "Rafraichir un token d'acces via un remember_me_token",
+        description = "Permet d'obtenir un nouveau `access_token` OAuth2 a partir d'un `remember_me_token` precedemment emis.",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Objet JSON contenant le remember_me_token",
+            required = true,
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = RememberedTokenRequest.class)
             )
+        )
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @ApiResponses(
+        value = {
+            @ApiResponse(
                 responseCode = "200",
                 description = "Token généré avec succès",
                 content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(implementation = TokenResponse.class)
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = TokenResponse.class)
                 )
-        ),
-        @ApiResponse(
+            ),
+            @ApiResponse(
                 responseCode = "400",
                 description = "Paramètres manquants ou invalides"
-        )
-    })
-    @PostMapping(value = "/remembered",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            )
+        }
+    )
+    @PostMapping(
+        value = "/remembered",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> oauth2Remembered(
-            @Parameter(description = "Objet contenant le remember_me_token valide", required = true)
-            @Valid @RequestBody RememberedTokenRequest rememberedTokenRequest,
-            HttpServletRequest request
+        @Parameter(description = "Objet contenant le remember_me_token valide", required = true)
+        @Valid @RequestBody RememberedTokenRequest rememberedTokenRequest,
+        HttpServletRequest request
     ) {
         Claims claims = jwtService.extractAllClaims(rememberedTokenRequest.getRememberMeToken());
 
@@ -266,51 +277,43 @@ public class AuthenticationController {
         return oauth2Token(tokenRequest, request);
     }
 
-    /**
-     * Déconnexion - Nettoie les tokens stockés
-     * @param rememberedTokenRequest Objet contenant le auth_token valide
-     * @param request requête http
-     * @return une réponse vide
-     */
     @Operation(
-            summary = "Déconnexion - Nettoie les tokens stockés",
-            description = "Supprime tous les tokens d'authentification stockés côté serveur (authToken et rememberMeToken) pour déconnecter l'utilisateur. Cette opération est irréversible.",
-            security = {
-                @SecurityRequirement(name = "Bearer Authentication")},
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Objet JSON contenant un token d'authentification (access_token ou remember_me_token)",
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = RememberedTokenRequest.class)
-                    )
+        summary = "Deconnexion - Nettoie les tokens stockes",
+        description = 
+                "Supprime tous les tokens d'authentification stockes cote serveur (authToken et rememberMeToken) pour deconnecter l'utilisateur."
+                + "\nCette operation est irreversible.",
+        security = {@SecurityRequirement(name = "Bearer Authentication")},
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Objet JSON contenant un token d'authentification (access_token ou remember_me_token)",
+            required = true,
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = RememberedTokenRequest.class)
             )
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-                responseCode = "200",
-                description = "Déconnexion effectuée avec succès. Tous les tokens ont été supprimés.",
-                content = @Content()
-        ),
-        @ApiResponse(
-                responseCode = "400",
-                description = "Token manquant ou invalide",
-                content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(
-                                type = "object",
-                                example = "{ \"error\": \"invalid_request\", \"error_description\": \"Token manquant ou invalide\" }"
-                        )
-                )
         )
-    })
-    @PostMapping(value = "/cleanup",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Deconnexion effectuee avec succes. Tous les tokens ont ete supprimes.",
+                content = @Content()
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Token manquant ou invalide"
+            )
+        }
+    )
+    @PostMapping(
+        value = "/cleanup",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<Void> oauth2Cleanup(
-            @Parameter(description = "Objet contenant le token d'authentification", required = true)
-            @Valid @RequestBody RememberedTokenRequest rememberedTokenRequest,
-            HttpServletRequest request
+        @Parameter(description = "Objet contenant le token d'authentification", required = true)
+        @Valid @RequestBody RememberedTokenRequest rememberedTokenRequest,
+        HttpServletRequest request
     ) {
         try {
             Claims claims = jwtService.extractAllClaimsForced(rememberedTokenRequest.getRememberMeToken());
@@ -323,10 +326,10 @@ public class AuthenticationController {
 
             String clientSignature = csb.buildClientSignature(request);
             oauth2Service.generateClientCredentialsToken(
-                    tokenRequest.getClient_id(),
-                    tokenRequest.getClient_secret(),
-                    tokenRequest.getScope(),
-                    clientSignature
+                tokenRequest.getClient_id(),
+                tokenRequest.getClient_secret(),
+                tokenRequest.getScope(),
+                clientSignature
             );
 
             return ResponseEntity.ok().build();

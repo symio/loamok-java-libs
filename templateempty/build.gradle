@@ -34,7 +34,7 @@ publishing {
             // 'project.name' va prendre le nom du dossier : 'o2springsecurity'
             artifactId = project.name 
             
-            // 'project.version' va prendre '1.0.0-SNAPSHOT'
+            // 'project.version' va prendre la version du parent
             version = project.version 
             // ===============================================
             

@@ -7,7 +7,7 @@ Bibliotheque de librairies Java / Spring Boot
 ### o2springsecurity : 
 
 Version Stable active : 1.0.1
-Version Développement active : 1.0.1-SNAPSHOT
+Version Développement active : 1.0.2-SNAPSHOT
  
 - Authentification OAuth2 Client Credentials avec JWT
 - Gestion des utilisateurs (creation, activation, desactivation)

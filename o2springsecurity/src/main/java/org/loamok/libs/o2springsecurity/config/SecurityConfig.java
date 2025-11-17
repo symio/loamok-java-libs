@@ -33,6 +33,9 @@ public class SecurityConfig {
 
     @Autowired
     private CorsConfigurationSource corsConfigurationSource;
+    
+    @Autowired
+    private LoamokSecurityProperties securityProperties;
     /**
      * Journalisation
      */
@@ -73,25 +76,33 @@ public class SecurityConfig {
             userRepository,
             csb
         );
+        
+        // Recuperer les chemins configures
+        String authPath = securityProperties.getEndpoints().getAuthBasePath();
+        String registerPath = securityProperties.getEndpoints().getRegisterBasePath();
 
         http
             .authorizeHttpRequests(auth -> {
-                logger.info("Configuration des règles d'autorisation...");
+                logger.info("Configuration des regles d'autorisation...");
+                logger.info("Auth path: "+ authPath);
+                logger.info("Register path: "+ registerPath);
                 
                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                 
                 auth.requestMatchers(HttpMethod.GET,  "/actuator/health").permitAll();
+                
+                // Routes publiques avec chemins dynamiques
                 auth.requestMatchers(HttpMethod.POST, 
-                    "/authorize/token",
-                    "/authorize/refresh", 
-                    "/authorize/cleanup",
-                    "/authorize/remembered",
-                    "/register/activate",
-                    "/register/deactivate",
-                    "/register/password-lost/step1",
-                    "/register/password-lost/step1/deactivate",
-                    "/register/password-lost/step2",
-                    "/register/password-lost/step2/deactivate",
+                    authPath + "/token",
+                    authPath + "/refresh", 
+                    authPath + "/cleanup",
+                    authPath + "/remembered",
+                    registerPath + "/activate",
+                    registerPath + "/deactivate",
+                    registerPath + "/password-lost/step1",
+                    registerPath + "/password-lost/step1/deactivate",
+                    registerPath + "/password-lost/step2",
+                    registerPath + "/password-lost/step2/deactivate",
                     "/users"
                 ).permitAll();
                 
@@ -105,7 +116,7 @@ public class SecurityConfig {
                     ).permitAll();
                 }
                 
-                // 4. Routes ADMIN uniquement (nécessitent ROLE_ADMIN)
+                // Routes ADMIN uniquement (nécessitent ROLE_ADMIN)
                 auth.requestMatchers(HttpMethod.GET, "/roles/**").hasRole("ADMIN");
                 auth.requestMatchers(HttpMethod.POST, "/roles/**").hasRole("ADMIN");
                 auth.requestMatchers(HttpMethod.PUT, "/roles/**").hasRole("ADMIN");
@@ -116,7 +127,7 @@ public class SecurityConfig {
                 auth.requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN");
                 auth.requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN");
                 
-                // 5. Toutes les autres requêtes nécessitent le scope "access"
+                // Toutes les autres requêtes nécessitent le scope "access"
                 auth.anyRequest().access(this::hasAccessScopeAndAuthenticated);
             })
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -146,7 +157,7 @@ public class SecurityConfig {
 
         // Vérifier que l'utilisateur a le scope "access"
         boolean hasAccessScope = auth.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("SCOPE_access"));
+            .anyMatch(authority -> authority.getAuthority().equals("SCOPE_access"));
 
         return new AuthorizationDecision(hasAccessScope);
     }

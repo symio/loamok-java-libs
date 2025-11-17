@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +41,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Huby Franck
  */
 @RestController
-@RequestMapping("/register")
+@RequestMapping("${loamok.security.endpoints.register-base-path:/register}")
 @RequiredArgsConstructor
 @Tag(name = "Register", description = "Opérations sécurisées sur la création de profils utilisateurs")
 public class UserProfileController {
@@ -127,7 +126,7 @@ public class UserProfileController {
     ) {
         try {
             Boolean verified = userService.deactivateRegisteredUser(
-                userActivateRequest.getKey(),  RegisterEmailConstants.EMAIL_MESSAGE_PREFIX +"_INVALIDATION"
+                userActivateRequest.getKey(), RegisterEmailConstants.EMAIL_MESSAGE_PREFIX +"_INVALIDATION"
             );
             
             if(verified.equals(Boolean.FALSE))
@@ -147,13 +146,15 @@ public class UserProfileController {
      * @return Réponse json vide code 200
      */
     @Operation(summary = "Première étape du challenge de sécurité pour mot de passe perdu")
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Première étape prise en compte.",
-            content = @Content()
-        )
-    })
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Première étape prise en compte.",
+                content = @Content()
+            )
+        }
+    )
     @PostMapping(value = "/password-lost/step1", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> passwordLostStep1(
         @Parameter(description = "Objet contenant l'adresse e-mail de l'utilisateur dont le mot de passe est perdu", required = true)
@@ -178,24 +179,26 @@ public class UserProfileController {
      * @return Réponse json vide code 200 ou 400
      */
     @Operation(summary = "Annule la première étape de réinitialisation de mot de passe d'un utilisateur")
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Réinitialisation de mot de passe annulée avec succès.",
-            content = @Content()
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Token manquant ou invalide",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(
-                    type = "object",
-                    example = "{ \"error\": \"invalid_request\", \"error_description\": \"Token manquant ou invalide\" }"
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Réinitialisation de mot de passe annulée avec succès.",
+                content = @Content()
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Token manquant ou invalide",
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                        type = "object",
+                        example = "{ \"error\": \"invalid_request\", \"error_description\": \"Token manquant ou invalide\" }"
+                    )
                 )
             )
-        )
-    })
+        }
+    )
     @PostMapping(value = "/password-lost/step1/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> step1Deactivate(
         @Parameter(description = "Objet contenant le token pour la requête", required = true)
@@ -222,24 +225,26 @@ public class UserProfileController {
      * @return Réponse json vide code 200 ou 400
      */
     @Operation(summary = "Seconde étape du challenge de sécurité pour mot de passe perdu.\nChangement effectif du mot de passe.")
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Seconde étape prise en compte.",
-            content = @Content()
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Token manquant ou invalide ou mots de passes incorects",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(
-                    type = "object",
-                    example = "{ \"error\": \"invalid_request\", \"error_description\": \"Token manquant ou invalide ou mots de passes incorects\" }"
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Seconde étape prise en compte.",
+                content = @Content()
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Token manquant ou invalide ou mots de passes incorects",
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                        type = "object",
+                        example = "{ \"error\": \"invalid_request\", \"error_description\": \"Token manquant ou invalide ou mots de passes incorrects\" }"
+                    )
                 )
             )
-        )
-    })
+        }
+    )
     @PostMapping(value = "/password-lost/step2", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> passwordLostStep2(
         @Parameter(description = "Objet contenant la requête de changement de mot de passe de l'utilisateur", required = true)
@@ -247,9 +252,9 @@ public class UserProfileController {
     ) {
         try {
             Boolean result = userService.resetChallengeRegisteredUser2(
-                    userNewPassword.getKey(), 
-                    userNewPassword.getNewPassword(), 
-                    userNewPassword.getPasswordConfirm()
+                userNewPassword.getKey(), 
+                userNewPassword.getNewPassword(), 
+                userNewPassword.getPasswordConfirm()
             );
             
             if(result.equals(Boolean.FALSE)) {
@@ -273,25 +278,27 @@ public class UserProfileController {
      * @return Réponse json vide code 200 ou 400
      */
     @Operation(summary = "Annule la seconde étape de réinitialisation de mot de passe d'un utilisateur")
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Réinitialisation de mot de passe annulée avec succès.",
-            content = @Content()
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Token manquant ou invalide",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(
-                    type = "object",
-                    example = "{ \"error\": \"invalid_request\", \"error_description\": \"Token manquant ou invalide\" }"
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Réinitialisation de mot de passe annulée avec succès.",
+                content = @Content()
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Token manquant ou invalide",
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                        type = "object",
+                        example = "{ \"error\": \"invalid_request\", \"error_description\": \"Token manquant ou invalide\" }"
+                    )
                 )
             )
-        )
-    })
-    @PostMapping(value = "/password-lost/step2/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE )
+        }
+    )
+    @PostMapping(value = "/password-lost/step2/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> step2Deactivate(
         @Parameter(description = "Objet contenant le token pour la requête", required = true)
         @Valid @RequestBody UserActivateRequest userActivateRequest
