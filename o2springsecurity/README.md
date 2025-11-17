@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.loamok.libs:o2springsecurity:1.0.1'
+    implementation 'org.loamok.libs:o2springsecurity:1.0.1-SNAPSHOT'
     
     // Dépendances Spring Boot requises
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -71,7 +71,7 @@ dependencies {
     <dependency>
         <groupId>org.loamok.libs</groupId>
         <artifactId>o2springsecurity</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.1-SNAPSHOT</version>
     </dependency>
     
     <!-- Dependencies requises -->
