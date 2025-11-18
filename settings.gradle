@@ -1,5 +1,6 @@
 rootProject.name = 'org.loamok.libs'
 
 include ':o2springsecurity'
+include ':emailtemplates'
 include ':templateempty'
 

@@ -1,0 +1,44 @@
+// (emailtemplates/build.gradle)
+
+// Les plugins sont déjà appliqués par la racine.
+// On garde 'spring-boot' pour ses fonctionnalités (si besoin).
+plugins {
+    id 'org.springframework.boot' version '3.5.5' apply false
+}
+
+// --- Infos UNIQUES à cette lib ---
+version = '1.0.1-SNAPSHOT'
+description = 'Librairie de gestion des templates E-mails' // À CHANGER
+// --- Fin des infos uniques ---
+
+// --- Dépendances UNIQUES à cette lib ---
+dependencies {
+    compileOnly 'org.springframework.boot:spring-boot-starter-mail'
+}
+// --- Fin des dépendances uniques ---
+
+// --- Publication UNIQUE à cette lib ---
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            // ===============================================
+            // AJOUT DE SÉCURITÉ :
+            // Forcer les coordonnées, au lieu de juste
+            // faire confiance à "from components.java"
+            
+            // 'project.group' va hériter 'org.loamok.libs' du parent
+            group = rootProject.group 
+            
+            // 'project.name' va prendre le nom du dossier : 'emailtemplates'
+            artifactId = project.name 
+            
+            // Le seul bout du POM qui est unique
+            pom {
+                name = 'Librairie E-mails templates' // À CHANGER
+                description = project.description // Récupère la description du haut
+            }
+        }
+    }
+}
