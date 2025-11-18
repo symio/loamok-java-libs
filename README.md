@@ -10,12 +10,12 @@ Version Stable active : 1.0.3
 Version Développement active : 1.0.3-SNAPSHOT
  
 - Authentification OAuth2 Client Credentials avec JWT
-- Gestion des utilisateurs (creation, activation, desactivation)
-- Challenge de securite pour reinitialisation de mot de passe
+- Gestion des utilisateurs (création, activation, désactivation)
+- Challenge de sécurité pour reinitialisation de mot de passe
 - Tokens Remember Me
-- Systeme d'email avec templates
+- Systeme d'e-mail avec templates
 - Protection CORS configurable
-- Signature client pour securite renforcee
+- Signature client pour sécurité renforcée
 
 ## Installation
 
@@ -53,7 +53,8 @@ dependencies {
 
 ### Maven
 
-Comme pour Gradle, le registre de packages GitHub (maven.pkg.github.com) exige une authentification pour télécharger les artefacts, même s'ils sont publics.
+Comme pour Gradle, le registre de packages GitHub (maven.pkg.github.com) exige 
+une authentification pour télécharger les artefacts, même s'ils sont publics.
 
 Le processus se fait en deux étapes :
 
@@ -89,7 +90,8 @@ Vous devez ajouter le dépôt (```<repository>```) en plus de la dépendance (``
 
 #### 2. Configuration de l'authentification (settings.xml)
 
-Vous devez ajouter un bloc ```<server>``` dont l'```<id>``` correspond exactement à l'<id> que vous avez défini dans le pom.xml (GitHubPackages-Loamok).
+Vous devez ajouter un bloc ```<server>``` dont l'```<id>``` correspond exactement 
+à l'<id> que vous avez défini dans le pom.xml (GitHubPackages-Loamok).
 
 ```xml
 <settings>

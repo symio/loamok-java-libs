@@ -71,6 +71,7 @@ subprojects {
 
     // 7. Gérer Javadoc 
     // On utilise withType pour l'appliquer à toutes les tâches Javadoc
+    // désactiver pour avoir les warnings au build, ne pas commiter désactivé
     tasks.withType(Javadoc) {
         options.addStringOption('Xdoclint:all,-missing', '-quiet')
     }

@@ -21,7 +21,8 @@ public class UserEventHandler {
 
     /**
      * Gestion de la création d'un utilisateur
-     * @param user 
+     * 
+     * @param user Utilisateur à enregistrer
      */
     @HandleBeforeCreate
     public void handleUtilisateurCreate(User user) {

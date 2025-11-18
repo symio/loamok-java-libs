@@ -277,6 +277,13 @@ public class AuthenticationController {
         return oauth2Token(tokenRequest, request);
     }
 
+    /**
+     * Déconnexion - Nettoie les tokens stockés
+     * 
+     * @param rememberedTokenRequest Objet contenant le auth_token valide
+     * @param request requête http
+     * @return une réponse vide
+     */
     @Operation(
         summary = "Deconnexion - Nettoie les tokens stockes",
         description = 

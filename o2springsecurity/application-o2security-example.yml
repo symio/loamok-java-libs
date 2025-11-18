@@ -2,14 +2,14 @@
 # Copiez ce fichier vers application.yml, application-secrets.yml et adaptez les valeurs
 
 # ============================================================
-# CONFIGURATION LOAMOK SECURITY (Proprietes de la bibliotheque)
+# CONFIGURATION LOAMOK SECURITY (Propriétés de la bibliothèque)
 # ============================================================
 loamok:
   security:
     # Configuration JWT
     jwt:
-      # OBLIGATOIRE : Cle secrete encodee en base64
-      # Generation : echo -n "VotreSecretTresLongEtAleatoire" | base64
+      # OBLIGATOIRE : Cle secrète encodée en base64
+      # Génération : echo -n "VotreSecretTresLongEtAléatoire" | base64
       # à mettre dans application-secrets.yml
       secret: ${JWT_SECRET:VGhpc0lzQURldkp3dFNlY3JldEZvckxvY2FsVGVzdGluZ09ubHkxMjM0NQ==}
       
@@ -65,7 +65,7 @@ loamok:
       enable-request-logging: false
 
 # ============================================================
-# CONFIGURATION SPRING BOOT (Dependances externes OBLIGATOIRES)
+# CONFIGURATION SPRING BOOT (Dépendances externes OBLIGATOIRES)
 # ============================================================
 spring:
   # Configuration base de donnees (OBLIGATOIRE)
@@ -85,7 +85,7 @@ spring:
   
   # Configuration JPA/Hibernate (OBLIGATOIRE)
   jpa:
-    # Mode de creation/mise a jour du schéma
+    # Mode de création/mise à jour du schéma
     # - create-drop : Recrée le schéma à chaque démarrage (dev uniquement)
     # - update : Met a jour le schéma automatiquement (dev/test)
     # - validate : Vérifie le schéma sans le modifier (production)
@@ -130,7 +130,7 @@ spring:
           # Activer l'authentification SMTP
           auth: true
           
-          # Activer STARTTLS pour securiser la connexion
+          # Activer STARTTLS pour sécuriser la connexion
           starttls.enable: true
           
           # Timeout de connexion en millisecondes (optionnel)
@@ -150,6 +150,7 @@ server:
   
   # Contexte de l'application
   # Généralement le nom du war dans tomcat
+  # Généralement inutile
   # servlet:
   #   context-path: /api
 
