@@ -1,41 +1,28 @@
-package org.loamok.libs.o2springsecurity.repository;
+package org.loamok.libs.o2springsecurity.event;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.Collection;
-import java.util.List;
-import java.util.function.LongSupplier;
 import org.loamok.libs.o2springsecurity.entity.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.loamok.libs.o2springsecurity.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Meta repository pour retrouver les ressources d'un utilisateur identifié
+ * Meta Handler pour travailler sur les ressources d'un utilisateur identifié
  *
  * @author Huby Franck
  */
-public abstract class IdentifiedRepository {
-    /**
-     * Entity manager
-     */
-    @PersistenceContext
-    protected EntityManager em;
+public abstract class IdentifiedHandler {
     /**
      * Repository utilisateur
      */
     protected final UserRepository userRepository;
 
     /**
-     * Constructeur
-     * 
+     * Constructeur par défaut pour injection de dépendances
      * @param userRepository Repository utilisateur
      */
-    protected IdentifiedRepository(UserRepository userRepository) {
+    protected IdentifiedHandler(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -94,26 +81,5 @@ public abstract class IdentifiedRepository {
     protected boolean isAdminWithScopeAdmin() {
         User user = getCurrentUser();
         return Boolean.TRUE.equals(user.getRole().getIsAdmin()) && hasScope("admin");
-    }
-
-    /**
-     * Utilitaire pour la pagination des résultats
-     * 
-     * @param <T> Objet
-     * @param query Requête
-     * @param pageable Paginateur
-     * @param countSupplier Fournisseur de "select count"
-     * @return une requête paginée
-     */
-    protected <T> Page<T> paginateQuery(TypedQuery<T> query,
-                                        Pageable pageable,
-                                        LongSupplier countSupplier) {
-        List<T> content = query
-                .setFirstResult((int) pageable.getOffset())
-                .setMaxResults(pageable.getPageSize())
-                .getResultList();
-
-        long total = countSupplier.getAsLong();
-        return new PageImpl<>(content, pageable, total);
     }
 }

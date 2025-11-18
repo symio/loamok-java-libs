@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.loamok.libs.o2springsecurity.entity.Role;
 import org.loamok.libs.o2springsecurity.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -34,7 +35,7 @@ public class SpringDataRestConfig implements RepositoryRestConfigurer {
      * @param corsConfigurationSource CorsConfigurationSource
      */
     @Autowired
-    public SpringDataRestConfig(CorsConfigurationSource corsConfigurationSource) {
+    public SpringDataRestConfig(@Qualifier("corsConfigurationSource") CorsConfigurationSource corsConfigurationSource) {
         this.corsConfigurationSource = corsConfigurationSource;
     }
 
