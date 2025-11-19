@@ -7,12 +7,14 @@ plugins {
 }
 
 // --- Infos UNIQUES à cette lib ---
-version = '1.0.3'
+version = '1.0.4-SNAPSHOT'
 description = 'Loamok Spring Security Library - OAuth2 JWT Authentication'
 // --- Fin des infos uniques ---
 
 // --- Dépendances UNIQUES à cette lib ---
 dependencies {
+    // Dépendances croisées Loamok
+    implementation 'org.loamok.libs:emailtemplates:1.0.1-SNAPSHOT'
     // Spring Boot Starters (provided par le projet consommateur)
     compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa'
     compileOnly 'org.springframework.boot:spring-boot-starter-mail'
@@ -59,9 +61,6 @@ publishing {
             
             // 'project.name' va prendre le nom du dossier : 'o2springsecurity'
             artifactId = project.name 
-            
-            // 'project.version' va prendre la version du parent
-            version = project.version 
             // ===============================================
 
             // Le seul bout du POM qui est unique

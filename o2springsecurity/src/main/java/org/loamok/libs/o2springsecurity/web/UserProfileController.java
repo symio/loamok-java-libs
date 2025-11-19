@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.loamok.libs.o2springsecurity.dto.email.constants.RegisterEmailConstants;
+import org.loamok.libs.emailtemplates.dto.email.constants.RegisterEmailConstants;
 import org.loamok.libs.o2springsecurity.dto.request.UserActivateRequest;
 import org.loamok.libs.o2springsecurity.dto.request.UserEmailSearchRequest;
 import org.loamok.libs.o2springsecurity.dto.request.UserNewPasswordAfterLostRequest;

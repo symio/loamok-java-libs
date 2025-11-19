@@ -14,7 +14,16 @@ description = 'Librairies Java Loamok'
 allprojects {
     // Commun à tous (racine + sous-projets)
     repositories {
-        mavenCentral()
+        mavenLocal()
+	mavenCentral()
+        maven {
+            name = "GitHubPackages-Loamok"
+            url = uri("https://maven.pkg.github.com/symio/loamok-java-libs") 
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 
