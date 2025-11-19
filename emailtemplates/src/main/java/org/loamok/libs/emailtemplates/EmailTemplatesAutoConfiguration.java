@@ -1,6 +1,6 @@
 package org.loamok.libs.emailtemplates;
 
-import org.loamok.libs.emailtemplates.config.LoamokEmailsTemplatesProperties;
+import org.loamok.libs.emailtemplates.config.LoamokEmailTemplatesProperties;
 import org.loamok.libs.emailtemplates.manager.EmailManager;
 import org.loamok.libs.emailtemplates.manager.EmailService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -22,7 +22,7 @@ import org.springframework.mail.javamail.JavaMailSender;
         "org.loamok.libs.emailtemplates.manager"
     }
 )
-public class EmailsTemplatesAutoConfiguration {
+public class EmailTemplatesAutoConfiguration {
 
     /**
      * Email manager
@@ -33,7 +33,7 @@ public class EmailsTemplatesAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public EmailService emailService(JavaMailSender javaMailSender, LoamokEmailsTemplatesProperties emailsProperties) {
+    public EmailService emailService(JavaMailSender javaMailSender, LoamokEmailTemplatesProperties emailsProperties) {
         return new EmailManager(javaMailSender, emailsProperties);
     }
 

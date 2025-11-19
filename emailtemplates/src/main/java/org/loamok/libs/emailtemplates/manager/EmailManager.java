@@ -5,7 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.loamok.libs.emailtemplates.config.LoamokEmailsTemplatesProperties;
+import org.loamok.libs.emailtemplates.config.LoamokEmailTemplatesProperties;
 import org.loamok.libs.emailtemplates.entity.EmailDetails;
 import org.loamok.libs.emailtemplates.exceptions.EmailSendingException;
 import org.loamok.libs.emailtemplates.exceptions.EmailWithAttachmentSendingException;
@@ -56,7 +56,7 @@ import org.springframework.stereotype.Service;
 public class EmailManager implements EmailService {
 
     private final JavaMailSender javaMailSender;
-    private final LoamokEmailsTemplatesProperties emailsProperties;
+    private final LoamokEmailTemplatesProperties emailsProperties;
     
     /**
      * Adresse expediteur des emails
@@ -82,7 +82,7 @@ public class EmailManager implements EmailService {
      * @param emailsProperties Configuration de la bibliotheque
      */
     @Autowired
-    public EmailManager(JavaMailSender javaMailSender, LoamokEmailsTemplatesProperties emailsProperties) {
+    public EmailManager(JavaMailSender javaMailSender, LoamokEmailTemplatesProperties emailsProperties) {
         this.javaMailSender = javaMailSender;
         this.emailsProperties = emailsProperties;
     }

@@ -11,12 +11,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Data
 @ConfigurationProperties(prefix = "loamok.emails")
-public class LoamokEmailsTemplatesProperties {
+public class LoamokEmailTemplatesProperties {
 
     /**
      * Constructeur par défaut
      */
-    public LoamokEmailsTemplatesProperties() {
+    public LoamokEmailTemplatesProperties() {
         super();
     }
 
