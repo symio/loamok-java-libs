@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.loamok.libs:emailtemplates:1.0.1-SNAPSHOT'
+    implementation 'org.loamok.libs:emailtemplates:1.0.1'
     
     // Dépendances Spring Boot requises
     implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -65,7 +65,7 @@ dependencies {
     <dependency>
         <groupId>org.loamok.libs</groupId>
         <artifactId>emailtemplates</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </dependency>
     
     <!-- Dépendances requises -->
