@@ -5,6 +5,7 @@ import org.loamok.libs.emailtemplates.manager.EmailManager;
 import org.loamok.libs.emailtemplates.manager.EmailService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,6 +17,7 @@ import org.springframework.mail.javamail.JavaMailSender;
  * @author Huby Franck
  */
 @AutoConfiguration
+@EnableConfigurationProperties(LoamokEmailTemplatesProperties.class)
 @ComponentScan(
     basePackages = {
         "org.loamok.libs.emailtemplates.dto.email",
