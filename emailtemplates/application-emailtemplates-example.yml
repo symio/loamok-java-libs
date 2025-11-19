@@ -1,0 +1,54 @@
+# Fichier de configuration exemple pour l'utilisation de o2springsecurity
+# Copiez ce fichier vers application.yml, application-secrets.yml et adaptez les valeurs
+
+# ============================================================
+# CONFIGURATION LOAMOK SECURITY (Propriétés de la bibliothèque)
+# ============================================================
+loamok:
+  EMAILS:
+    # Configuration E-mail
+    email:
+      # OBLIGATOIRE : URL de base du FRONTEND pour les liens dans les e-mails
+      # Exemple: Si base-url=http://localhost:4200, les liens seront:
+      # - http://localhost:4200/register/activate?key=xxx
+      # - http://localhost:4200/register/password-lost2?key=xxx
+      base-url: ${BASE_URL:http://localhost:4200}
+      
+      # OBLIGATOIRE : E-mail administrateur pour recevoir les notifications
+      admin-email: ${ADMIN_EMAIL:admin@example.com}
+      
+      # Nom de votre application à afficher dans les e-mails
+      application-name: Todo
+# ============================================================
+# CONFIGURATION SPRING BOOT (Dépendances externes OBLIGATOIRES)
+# ============================================================
+spring:
+  # Configuration serveur mail (OBLIGATOIRE pour envoyer des e-mails)
+  mail:
+    # Serveur SMTP
+    host: ${SPRING_MAIL_HOST:smtp.example.com}
+    
+    # Port SMTP (587 pour STARTTLS, 465 pour SSL, 25 pour non-sécurisé)
+    port: ${SPRING_MAIL_PORT:587}
+    
+    # Identifiant compte SMTP (utilisé aussi comme adresse d'expéditeur par defaut)
+    username: ${SPRING_MAIL_USERNAME:noreply@example.com}
+    
+    # Mot de passe compte SMTP
+    password: ${SPRING_MAIL_PASSWORD:mailpassword}
+    
+    # Propriétés SMTP avancées
+    properties:
+      mail:
+        smtp:
+          # Activer l'authentification SMTP
+          auth: true
+          
+          # Activer STARTTLS pour sécuriser la connexion
+          starttls.enable: true
+          
+          # Timeout de connexion en millisecondes (optionnel)
+          # connectiontimeout: 5000
+          
+          # Timeout d'écriture en millisecondes (optionnel)
+          # timeout: 5000

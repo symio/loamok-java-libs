@@ -1,5 +1,6 @@
 package org.loamok.libs.o2springsecurity.config;
 
+import org.loamok.libs.emailtemplates.config.LoamokEmailTemplatesProperties;
 import org.loamok.libs.emailtemplates.dto.email.interfaces.EmailMessage;
 import org.loamok.libs.emailtemplates.manager.EmailService;
 import org.loamok.libs.o2springsecurity.manager.UserManager;
@@ -121,6 +122,7 @@ public class SecurityAutoConfiguration {
      * @param clientSignatureUtil ClientSignatureUtil
      * @param emailService EmailService
      * @param securityProperties Configuration de la bibliotheque
+     * @param emailProperties Configuration de la bibliotheque emailTemplates
      * @return UserService
      */
     @Bean
@@ -131,12 +133,13 @@ public class SecurityAutoConfiguration {
         RoleRepository roleRepository,
         ClientSignatureUtil clientSignatureUtil,
         EmailService emailService,
-        LoamokSecurityProperties securityProperties
+        LoamokSecurityProperties securityProperties,
+        LoamokEmailTemplatesProperties emailProperties
     ) {
         return new UserManager(
             messageGetter, userRepository,
             roleRepository, clientSignatureUtil,
-            emailService, securityProperties
+            emailService, securityProperties, emailProperties
         );
     }
 

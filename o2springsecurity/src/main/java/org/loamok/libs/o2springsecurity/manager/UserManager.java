@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.loamok.libs.emailtemplates.config.LoamokEmailTemplatesProperties;
 import org.loamok.libs.emailtemplates.dto.email.constants.EmailMessageConstants;
 import org.loamok.libs.emailtemplates.dto.email.constants.RegisterEmailConstants;
 import org.loamok.libs.emailtemplates.dto.email.constants.ResetChallengeConstants;
@@ -56,6 +57,7 @@ public class UserManager implements UserService {
     private final ClientSignatureUtil csb;
     private final EmailService emailManager;
     private final LoamokSecurityProperties securityProperties;
+    private final LoamokEmailTemplatesProperties emailProperties;
 
     @Override
     @Transactional
@@ -234,7 +236,7 @@ public class UserManager implements UserService {
                         substitutions
                 );
                 String statusAdmin = emailManager.sendSimpleMail(EmailDetails.builder()
-                        .recipient(securityProperties.getEmail().getAdminEmail())
+                        .recipient(emailProperties.getEmail().getAdminEmail())
                         .subject(title)
                         .msgBody(messageAdmin)
                         .build());
@@ -302,7 +304,7 @@ public class UserManager implements UserService {
                         substitutions
                 );
                 String statusAdmin = emailManager.sendSimpleMail(EmailDetails.builder()
-                        .recipient(securityProperties.getEmail().getAdminEmail())
+                        .recipient(emailProperties.getEmail().getAdminEmail())
                         .subject(title)
                         .msgBody(messageAdmin)
                         .build());

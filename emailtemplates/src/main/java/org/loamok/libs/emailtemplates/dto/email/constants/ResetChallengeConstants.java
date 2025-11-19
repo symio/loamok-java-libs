@@ -18,13 +18,13 @@ public final class ResetChallengeConstants {
      * Titre de l'e-mail de validation de la première étape
      */
     public static final String RESET_CHALLENGE_KEY_GENERATION_TITLE = """
-        R\u00e9initialiser votre mot de passe d'acc\u00e8s \u00e0 l'application Todo.""";
+        R\u00e9initialiser votre mot de passe d'acc\u00e8s \u00e0 l'application %%%APP_NAME%%%.""";
     /**
      * Corps de l'e-mail de validation de la première étape
      */
     public static final String RESET_CHALLENGE_KEY_GENERATION = 
         """
-        Vous avez demand\u00e9 la r\u00e9initialisation de votre mot de passe pour l'application Todo.
+        Vous avez demand\u00e9 la r\u00e9initialisation de votre mot de passe pour l'application %%%APP_NAME%%%.
 
         Afin de proc\u00e9der \u00e0 cette r\u00e9initialisation merci de cliquer sur le lien suivant : 
         %%%BASE_URL%%%/register/password-lost2?key=%%%EMAIL_VERIFICATION_KEY%%%
@@ -35,7 +35,7 @@ public final class ResetChallengeConstants {
         \t- Cl\u00e9 d'activation : %%%EMAIL_VERIFICATION_KEY%%%
         \t- Url d'activation : %%%BASE_URL%%%/register/password-lost2
 
-        Si vous n'avez pas demand\u00e9 cette r\u00e9initialisation sur Todo vous pouvez nous le signaler.
+        Si vous n'avez pas demand\u00e9 cette r\u00e9initialisation sur %%%APP_NAME%%% vous pouvez nous le signaler.
         Pour cela utilisez l'url ci-dessous : 
         %%%BASE_URL%%%/register/password-lost1/deactivate?key=%%%EMAIL_VERIFICATION_KEY%%%
 
@@ -55,7 +55,7 @@ public final class ResetChallengeConstants {
      */
     public static final String RESET_CHALLENGE_INVALIDATION = 
         """
-        Vous avez demand\u00e9 l'invalidation d'une demande de r\u00e9initialisation de mot de passe sur l'application Todo avec votre adresse e-mail.
+        Vous avez demand\u00e9 l'invalidation d'une demande de r\u00e9initialisation de mot de passe sur l'application %%%APP_NAME%%% avec votre adresse e-mail.
         
         Ce message vous indique que votre demande a bien \u00e9t\u00e9 prise en compte.
         
@@ -86,11 +86,11 @@ public final class ResetChallengeConstants {
      */
     public static final String RESET_CHALLENGE_VALIDATION = 
         """
-        Vous avez demand\u00e9 la r\u00e9initialisation de votre mot de passe pour l'application Todo.
+        Vous avez demand\u00e9 la r\u00e9initialisation de votre mot de passe pour l'application %%%APP_NAME%%%.
 
         Votre mot de passe a bien \u00e9t\u00e9 modifi\u00e9.
 
-        Si vous n'avez pas demand\u00e9 cette r\u00e9initialisation sur Todo vous pouvez nous le signaler.
+        Si vous n'avez pas demand\u00e9 cette r\u00e9initialisation sur %%%APP_NAME%%% vous pouvez nous le signaler.
         Pour cela utilisez l'url ci-dessous : 
         %%%BASE_URL%%%/register/password-lost2/deactivate?key=%%%EMAIL_VERIFICATION_KEY%%%
         

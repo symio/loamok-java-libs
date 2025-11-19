@@ -8,7 +8,7 @@ plugins {
 
 // --- Infos UNIQUES à cette lib ---
 version = '1.0.1-SNAPSHOT'
-description = 'Librairie de gestion des templates E-mails' // À CHANGER
+description = 'Librairie de gestion des templates E-mails'
 // --- Fin des infos uniques ---
 
 // --- Dépendances UNIQUES à cette lib ---
@@ -36,7 +36,7 @@ publishing {
             
             // Le seul bout du POM qui est unique
             pom {
-                name = 'Librairie E-mails templates' // À CHANGER
+                name = 'Librairie E-mails templates'
                 description = project.description // Récupère la description du haut
             }
         }

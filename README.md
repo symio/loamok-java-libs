@@ -6,7 +6,8 @@ Bibliotheque de librairies Java / Spring Boot
 
 ### o2springsecurity : 
 
-Version Stable active : 1.0.3
+Version Stable active : 1.0.4
+
 Version Développement active : 1.0.4-SNAPSHOT
  
 - Authentification OAuth2 Client Credentials avec JWT
@@ -16,6 +17,14 @@ Version Développement active : 1.0.4-SNAPSHOT
 - Systeme d'e-mail avec templates
 - Protection CORS configurable
 - Signature client pour sécurité renforcée
+
+### emailtemplates : 
+
+Version Stable active : 1.0.1
+
+Version Développement active : 1.0.1-SNAPSHOT
+ 
+- Systeme d'e-mail avec templates
 
 ## Installation
 

@@ -106,6 +106,20 @@ La bibliothèque nécessite la configuration de plusieurs propriétés Spring Bo
 # CONFIGURATION LOAMOK SECURITY (Propriétés de la bibliothèque)
 # ============================================================
 loamok:
+emails:
+    # Configuration E-mail
+    email:
+      # OBLIGATOIRE : URL de base du FRONTEND pour les liens dans les e-mails
+      # Exemple: Si base-url=http://localhost:4200, les liens seront:
+      # - http://localhost:4200/register/activate?key=xxx
+      # - http://localhost:4200/register/password-lost2?key=xxx
+      base-url: ${BASE_URL:http://localhost:4200}
+      
+      # OBLIGATOIRE : E-mail administrateur pour recevoir les notifications
+      admin-email: ${ADMIN_EMAIL:admin@example.com}
+
+      # Nom de votre application à afficher dans les e-mails
+      application-name: Todo
   security:
     # Configuration JWT
     jwt:
@@ -142,15 +156,6 @@ loamok:
     
     # Configuration E-mail
     email:
-      # OBLIGATOIRE : URL de base du FRONTEND pour les liens dans les e-mails
-      # Exemple: Si base-url=http://localhost:4200, les liens seront:
-      # - http://localhost:4200/register/activate?key=xxx
-      # - http://localhost:4200/register/password-lost2?key=xxx
-      base-url: ${BASE_URL:http://localhost:4200}
-      
-      # OBLIGATOIRE : E-mail administrateur pour recevoir les notifications
-      admin-email: ${ADMIN_EMAIL:admin@example.com}
-      
       # Durée de validité des clés d'activation e-mail en heures (défaut: 1)
       key-validity-hours: 1
     
@@ -254,6 +259,11 @@ MAIL_PASSWORD=mailpassword
 
 ```yaml
 loamok:
+  emails:
+    email:
+      base-url: ${BASE_URL}
+      admin-email: admin@example.com
+      application-name: Todo
   security:
     jwt:
       secret: ${JWT_SECRET}
@@ -267,9 +277,7 @@ loamok:
       allow-credentials: true
       max-age: 3600
     email:
-      base-url: ${BASE_URL}
       key-validity-hours: 1
-      admin-email: admin@example.com
     endpoints:
       auth-base-path: /authorize
       register-base-path: /register
@@ -312,8 +320,9 @@ spring:
 | `loamok.security.jwt.remember-me-token-expiration-days` | int | 365 | Durée de validité du token remember-me (jours) |
 | `loamok.security.jwt.stored-token-expiration-hours` | int | 2 | Durée de validité du token stocké serveur (heures) |
 | `loamok.security.cors.allowed-origins` | String | **OBLIGATOIRE** | Origines autorisées CORS (séparées par virgules) |
-| `loamok.security.email.base-url` | String | **OBLIGATOIRE** | URL de base pour les liens dans les emails |
-| `loamok.security.email.admin-email` | String | **OBLIGATOIRE** | Email de l'administrateur pour notifications |
+| `loamok.emails.email.base-url` | String | **OBLIGATOIRE** | URL de base pour les liens dans les emails |
+| `loamok.emails.email.admin-email` | String | **OBLIGATOIRE** | Email de l'administrateur pour notifications |
+| `loamok.emails.email.application_name` | String | **OBLIGATOIRE** | Email de l'administrateur pour notifications |
 | `loamok.security.email.key-validity-hours` | int | 1 | Durée de validité des clés d'activation email (heures) |
 
 ### Dépendances Spring Boot requises

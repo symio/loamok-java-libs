@@ -44,14 +44,14 @@ public class LoamokEmailTemplatesProperties {
         private String baseUrl = "http://localhost";
 
         /**
-         * Duree de validite des cles d'activation en heures (defaut: 1h)
-         */
-        private int keyValidityHours = 1;
-
-        /**
          * Adresse email de l'administrateur pour les notifications
          */
         private String adminEmail = "admin@loamok.org";
+
+        /**
+         * Nom de l'application à afficher dans les emails
+         */
+        private String applicationName = "todo";
     }
 
 }

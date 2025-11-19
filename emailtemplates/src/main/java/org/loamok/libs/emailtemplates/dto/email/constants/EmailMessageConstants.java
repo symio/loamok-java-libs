@@ -35,7 +35,7 @@ public final class EmailMessageConstants {
         Cordialement,
 
         --,
-        L'\u00e9quipe de Todo
+        L'\u00e9quipe de %%%APP_NAME%%%
         %%%BASE_URL%%%/mentions-legales 
         """;
     

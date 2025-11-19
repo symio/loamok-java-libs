@@ -8,6 +8,7 @@ import org.loamok.libs.emailtemplates.dto.email.interfaces.EmailMessage;
 import org.loamok.libs.emailtemplates.dto.email.interfaces.RegisterEmail;
 import org.loamok.libs.emailtemplates.dto.email.interfaces.ResetChallenge;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,6 +24,9 @@ public class EmailMessageGetter implements EmailMessage {
     private ResetChallenge resetChallengeMessages;
     
     private static final String SEPARATOR = EmailMessageConstants.EMAIL_MESSAGE_SUBSTITUTION_SEPARATOR;
+    
+    @Value("${loamok.emails.email.application-name}")
+    private String APP_NAME;
     
     @Override
     public String getEmailMessage(String messageKey, Map<String, String> substitutions) {
@@ -42,8 +46,10 @@ public class EmailMessageGetter implements EmailMessage {
         String message = resultingMessage.toString();
         
         for (String key : substitutions.keySet()) {
-            message = message.replace(SEPARATOR + key + SEPARATOR,substitutions.get(key));
+            message = message.replace(SEPARATOR + key + SEPARATOR, substitutions.get(key));
         }
+        
+        message = message.replace(SEPARATOR + "APP_NAME" + SEPARATOR, APP_NAME);
         
         return message;
     }
@@ -65,6 +71,7 @@ public class EmailMessageGetter implements EmailMessage {
                 title = title.replace(SEPARATOR + key + SEPARATOR, substitutions.get(key));
             }
         }
+        title = title.replace(SEPARATOR + "APP_NAME" + SEPARATOR, APP_NAME);
         
         return title;
     }
