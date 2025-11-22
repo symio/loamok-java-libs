@@ -2,6 +2,7 @@ package org.loamok.libs.o2springsecurity.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -136,6 +137,13 @@ public class User implements UserDetails {
     @JsonIgnore
     @Column(name = "key_validity", nullable = true)
     private Instant keyValidity;
+    /**
+     * Propriété temporaire pour validation du mot de passe pendant l'inscription
+     */
+    @Schema(name = "password_key", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Transient
+    private String passwordKey;
     /**
      * Propriété virtuelle pour l'authentification Oauth JWT
      */

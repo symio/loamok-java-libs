@@ -98,6 +98,7 @@ public class SecurityConfig {
                     authPath + "/cleanup",
                     authPath + "/remembered",
                     registerPath + "/activate",
+                    registerPath + "/check-password",
                     registerPath + "/deactivate",
                     registerPath + "/password-lost/step1",
                     registerPath + "/password-lost/step1/deactivate",

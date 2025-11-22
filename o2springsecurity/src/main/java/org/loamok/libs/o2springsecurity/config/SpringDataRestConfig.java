@@ -1,5 +1,8 @@
 package org.loamok.libs.o2springsecurity.config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,6 +75,20 @@ public class SpringDataRestConfig implements RepositoryRestConfigurer {
                 .allowedHeaders(headersArray)
                 .allowCredentials(corsConfig.getAllowCredentials())
                 .maxAge(corsConfig.getMaxAge());
+    }
+
+    /**
+     * Configuration de l'ObjectMapper pour Spring Data REST
+     * 
+     * @param objectMapper ObjectMapper
+     */
+    @Override
+    public void configureJacksonObjectMapper(ObjectMapper objectMapper) {
+        // Force Spring Data REST à accepter tous les champs
+        objectMapper.setVisibility(
+            PropertyAccessor.FIELD, 
+            JsonAutoDetect.Visibility.ANY
+        );
     }
 
     private static String[] safeArray(List<String> list) {
