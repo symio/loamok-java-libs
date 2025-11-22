@@ -7,7 +7,7 @@ plugins {
 }
 
 // --- Infos UNIQUES à cette lib ---
-version = '1.0.5'
+version = '1.0.6'
 description = 'Loamok Spring Security Library - OAuth2 JWT Authentication'
 // --- Fin des infos uniques ---
 
