@@ -388,7 +388,6 @@ public class UserManager implements UserService {
         }
 
         logger.info("## UserManager : registerUser ##");
-        logger.info("u.getPassword() : " + u.getPassword());
         
         String passwordChecksKey = checkPasswords(user.getPassword(), u.getPassword());
         logger.info("passwordChecksKey : " + passwordChecksKey);
