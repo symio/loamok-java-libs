@@ -14,7 +14,7 @@ description = 'Loamok Spring Security Library - OAuth2 JWT Authentication'
 // --- Dépendances UNIQUES à cette lib ---
 dependencies {
     // Dépendances croisées Loamok
-    implementation 'org.loamok.libs:emailtemplates:1.0.1'
+    implementation 'org.loamok.libs:emailtemplates:1.0.1-SNAPSHOT'
     // Spring Boot Starters (provided par le projet consommateur)
     compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa'
     compileOnly 'org.springframework.boot:spring-boot-starter-mail'
