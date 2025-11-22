@@ -108,12 +108,28 @@ public interface UserService {
      */
     Boolean checkEmailUnique(String email);
     /**
+     * Vérifie la conformité et correspondance de deux mot de passe
+     * 
+     * @param password Mot de passe
+     * @param newPassword nouveau Mot de passe
+     * @return une clé de validation du mot de passe
+     */
+    String checkPasswords(String password, String newPassword);
+    /**
      * Vérifie la conformité du mot de passe
      * 
      * @param password Mot de passe
      * @return vrai ou faux
      */
     Boolean checkPasswordCorrect(String password);
+    /**
+     * Vérifie la conformité du mot de passe
+     * 
+     * @param password Mot de passe
+     * @param newPassword nouveau Mot de passe
+     * @return vrai ou faux
+     */
+    Boolean checkPasswordCorrect(String password, String newPassword);
     /**
      * Vérifie les champs non nullables
      * 

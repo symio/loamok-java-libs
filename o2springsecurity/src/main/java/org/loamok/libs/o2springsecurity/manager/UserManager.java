@@ -366,6 +366,7 @@ public class UserManager implements UserService {
 
         User user = User.builder()
                 .password(u.getPassword())
+                .passwordKey(u.getPasswordKey())
                 .email(u.getEmail())
                 .name(u.getName())
                 .firstname(u.getFirstname())
@@ -386,7 +387,20 @@ public class UserManager implements UserService {
             }
         }
 
-        user.setPassword("{bcrypt}" + passwordEncoder.encode(u.getPassword()));
+        logger.info("## UserManager : registerUser ##");
+        logger.info("u.getPassword() : " + u.getPassword());
+        
+        String passwordChecksKey = checkPasswords(user.getPassword(), u.getPassword());
+        logger.info("passwordChecksKey : " + passwordChecksKey);
+        
+        Boolean passwordCheck = (passwordChecksKey != null && passwordChecksKey.equals(user.getPasswordKey()));
+        logger.info("passwordCheck : " + passwordCheck.toString());
+        
+        if(u.getPasswordKey() != null && passwordCheck.equals(Boolean.TRUE)) {
+            user.setPassword("{bcrypt}" + passwordEncoder.encode(u.getPassword()));
+        } else {
+            throw new InvalidPasswordException();
+        }
 
         emailKeyForRegisterUser(user);
 
@@ -456,6 +470,16 @@ public class UserManager implements UserService {
         return status;
     }
 
+    private String generateKey(String source) {
+        String hashedSignature = csb.buildHashedSignature(source);
+        String urlSafeSignature = hashedSignature
+                .replace('+', '-')
+                .replace('/', '_')
+                .replace("=", "");
+
+        return urlSafeSignature;
+    }
+    
     private String generateKey(User u) {
         String randomToken = UUID.randomUUID().toString();
 
@@ -465,13 +489,7 @@ public class UserManager implements UserService {
                 "" + System.currentTimeMillis(), randomToken
         );
 
-        String hashedSignature = csb.buildHashedSignature(rawSignature);
-        String urlSafeSignature = hashedSignature
-                .replace('+', '-')
-                .replace('/', '_')
-                .replace("=", "");
-
-        return urlSafeSignature;
+        return generateKey(rawSignature);
     }
 
     @Override
@@ -480,14 +498,14 @@ public class UserManager implements UserService {
         if (!isEmailUnique) {
             failedValidation.setLength(0);
             failedValidation.append("email");
-            return false;
+            return Boolean.FALSE;
         }
 
         Boolean isPasswordCorrect = checkPasswordCorrect(u.getPassword());
         if (!isPasswordCorrect) {
             failedValidation.setLength(0);
             failedValidation.append("password");
-            return false;
+            return Boolean.FALSE;
         }
 
         StringBuilder fieldName = new StringBuilder();
@@ -495,28 +513,41 @@ public class UserManager implements UserService {
         if (!areFieldsFilled) {
             failedValidation.setLength(0);
             failedValidation.append(fieldName);
-            return false;
+            return Boolean.FALSE;
         }
 
-        return true;
+        return Boolean.TRUE;
     }
 
     @Override
     @Transactional
     public Boolean checkEmailUnique(String email) {
         if (email == null || email.isBlank()) {
-            return false;
+            return Boolean.FALSE;
         }
 
         final User u = uR.findByEmail(email);
 
-        Boolean isUnique = false;
+        Boolean isUnique = Boolean.FALSE;
 
         if (u == null) {
-            isUnique = true;
+            isUnique = Boolean.TRUE;
         }
 
         return isUnique;
+    }
+
+    @Override
+    public String checkPasswords(String password, String newPassword) {
+        logger.info("### User Manager : checkPasswords ###");
+        String res = null;
+        if(checkPasswordCorrect(password, newPassword).equals(Boolean.TRUE)) {
+            logger.info("passwords corrects !");
+            res = generateKey("##" + password + "##" + newPassword + "##");
+        }
+        
+        logger.info("res : " + res);
+        return res;
     }
 
     @Override
@@ -524,22 +555,34 @@ public class UserManager implements UserService {
         if (u.getName() == null || u.getName().isBlank()) {
             fieldName.setLength(0);
             fieldName.append("name");
-            return false;
+            return Boolean.FALSE;
         }
 
         if (u.getFirstname() == null || u.getFirstname().isBlank()) {
             fieldName.setLength(0);
             fieldName.append("firstname");
-            return false;
+            return Boolean.FALSE;
         }
 
-        return true;
+        return Boolean.TRUE;
     }
 
     @Override
+    public Boolean checkPasswordCorrect(String password, String newPassword) {
+        if (password == null || password.isBlank() || newPassword == null || newPassword.isBlank()) {
+            return Boolean.FALSE;
+        }
+        
+        if(password.equals(newPassword)) {
+            return checkPasswordCorrect(password);
+        }
+        return Boolean.FALSE;
+    }
+    
+    @Override
     public Boolean checkPasswordCorrect(String password) {
         if (password == null || password.isBlank()) {
-            return false;
+            return Boolean.FALSE;
         }
 
         return PATTERN.matcher(password).matches();

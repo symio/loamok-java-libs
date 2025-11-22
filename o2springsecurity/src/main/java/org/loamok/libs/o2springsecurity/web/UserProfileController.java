@@ -12,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.loamok.libs.emailtemplates.dto.email.constants.RegisterEmailConstants;
+import org.loamok.libs.o2springsecurity.dto.request.CheckPasswordRequest;
 import org.loamok.libs.o2springsecurity.dto.request.UserActivateRequest;
 import org.loamok.libs.o2springsecurity.dto.request.UserEmailSearchRequest;
 import org.loamok.libs.o2springsecurity.dto.request.UserNewPasswordAfterLostRequest;
+import org.loamok.libs.o2springsecurity.dto.response.CheckPasswordsResponse;
 import org.loamok.libs.o2springsecurity.entity.User;
 import org.loamok.libs.o2springsecurity.manager.UserService;
 import org.springframework.http.MediaType;
@@ -22,7 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Contrôleur gestion des challenges de sécurité :
+ * Contrôleur gestion des challenges de sécurité et de l'inscription utilisateur :
+ * - checkPassword : vérifie la conformité d'un mot de passe
  * - activate : Active un utilisateur par validation de son adresse e-mail
  *      après l'auto-enregistrement d'un utilisateur
  * - deactivate : Annule l'activation d'un utilisateur
@@ -53,12 +56,76 @@ public class UserProfileController {
     private final UserService userService;
 
     /**
+     * passwordToCheckRequest : Vérifie la conformité d'un mot de passe.
+     * 
+     * @param passwordToCheckRequest : Objet contenant la requête de vérification de mot de passe de l'utilisateur
+     * @return Réponse json avec code de validation et code HTTP 200 ou 400
+     */
+    @Operation(
+        summary = "Vérifie la conformité d'un mot de passe.",
+        description = "Permet de valider un mot de passe et sa confirmation côté serveur."
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Mot de passe valide.",
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = CheckPasswordsResponse.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Mots de passes incorects",
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                        type = "object",
+                        example = "{ \"error\": \"invalid_request\", \"error_description\": \"Mots de passes incorrects\" }"
+                    )
+                )
+            )
+        }
+    )
+    @PostMapping(value = "/check-password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CheckPasswordsResponse> checkPassword(
+        @Parameter(description = "Objet contenant la requête de vérification de mot de passe", required = true)
+        @Valid @RequestBody CheckPasswordRequest passwordToCheckRequest
+    ) {
+        logger.info("### checkPassword : ###");
+        try {
+            String result = userService.checkPasswords(passwordToCheckRequest.getNewPassword(), passwordToCheckRequest.getPasswordConfirm());
+            logger.info("result : " + result);
+            
+            if(result == null) {
+                logUserChallengeError("mot de passe incorrect.");
+                return ResponseEntity.badRequest().build();
+            }
+            
+            CheckPasswordsResponse response = new CheckPasswordsResponse();
+            response.setPasswordKey(result);
+            logger.info("response : " + response);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logUserChallengeError("Exception : " + e.toString());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    
+    /**
      * activate: Active un utilisateur par validation de son adresse e-mail
      * 
      * @param userActivateRequest : Json contenant la clè relative à l'adresse e-mail de l'utilisateur à activer
      * @return Réponse json vide code 200 ou 400
      */
-    @Operation(summary = "Active un utilisateur par validation de son adresse e-mail")
+    @Operation(
+        summary = "Active un utilisateur par validation de son adresse e-mail",
+        description = "Activation et validation d'une adresse e-mail.\nAprès inscription, l'utilisateur désactivé reçoit un e-mail avec la clé de validation à renvoyer ici."
+    )
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
@@ -100,7 +167,10 @@ public class UserProfileController {
      * @param userActivateRequest : Json contenant la clè relative à l'adresse e-mail de l'utilisateur à désactiver
      * @return Réponse json vide code 200 ou 400
      */
-    @Operation(summary = "Annule l'activation d'un utilisateur")
+    @Operation(
+        summary = "Annule l'activation d'un utilisateur",
+        description = "Permet à l'utilisateur d'annuler une demande d'inscription avant validation."
+    )
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
@@ -145,7 +215,10 @@ public class UserProfileController {
      * @param userSearchRequest : Json contenant l'adresse e-mail relative à l'utilisateur
      * @return Réponse json vide code 200
      */
-    @Operation(summary = "Première étape du challenge de sécurité pour mot de passe perdu")
+    @Operation(
+        summary = "Première étape du challenge de sécurité pour mot de passe perdu",
+        description = "Génère une clé d'activation envoyée par e-mail pour confirmer la demande de changement de mot de passe."
+    )
     @ApiResponses(
         value = {
             @ApiResponse(
@@ -178,7 +251,10 @@ public class UserProfileController {
      * @param userActivateRequest : Json contenant la clè relative à l'adresse e-mail de l'utilisateur
      * @return Réponse json vide code 200 ou 400
      */
-    @Operation(summary = "Annule la première étape de réinitialisation de mot de passe d'un utilisateur")
+    @Operation(
+        summary = "Annule la première étape de réinitialisation de mot de passe d'un utilisateur",
+        description = "Annule la première étape du challenge."
+    )
     @ApiResponses(
         value = {
             @ApiResponse(
@@ -224,7 +300,10 @@ public class UserProfileController {
      * @param userNewPassword : Objet contenant la requête de changement de mot de passe de l'utilisateur
      * @return Réponse json vide code 200 ou 400
      */
-    @Operation(summary = "Seconde étape du challenge de sécurité pour mot de passe perdu.\nChangement effectif du mot de passe.")
+    @Operation(
+        summary = "Seconde étape du challenge de sécurité pour mot de passe perdu.\nChangement effectif du mot de passe.",
+        description = "Changement effectif du mot de passe."
+    )
     @ApiResponses(
         value = {
             @ApiResponse(
@@ -277,7 +356,10 @@ public class UserProfileController {
      * @param userActivateRequest : Json contenant la clè relative à l'adresse e-mail de l'utilisateur
      * @return Réponse json vide code 200 ou 400
      */
-    @Operation(summary = "Annule la seconde étape de réinitialisation de mot de passe d'un utilisateur")
+    @Operation(
+        summary = "Annule la seconde étape de réinitialisation de mot de passe d'un utilisateur",
+        description = "Annulation définitive et blocage fort du compte."
+    )
     @ApiResponses(
         value = {
             @ApiResponse(

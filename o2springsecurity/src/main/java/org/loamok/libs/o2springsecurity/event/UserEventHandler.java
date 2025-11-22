@@ -1,5 +1,7 @@
 package org.loamok.libs.o2springsecurity.event;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.loamok.libs.o2springsecurity.entity.User;
 import org.loamok.libs.o2springsecurity.manager.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,11 @@ import org.springframework.stereotype.Component;
 @RepositoryEventHandler(User.class)
 public class UserEventHandler {
 
+    /**
+     * Journalisation
+     */
+    protected final Log logger = LogFactory.getLog(getClass());
+    
     @Autowired
     private UserManager userManager;
 
@@ -26,6 +33,10 @@ public class UserEventHandler {
      */
     @HandleBeforeCreate
     public void handleUtilisateurCreate(User user) {
+        logger.info("### UserEventHandler - user reçu : " + user);
+        logger.info("### UserEventHandler - passwordKey : " + user.getPasswordKey());
+    
+        
         User cleanUser = userManager.registerUser(user, false);
 
         user.setName(cleanUser.getName());
