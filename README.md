@@ -6,7 +6,7 @@ Bibliotheque de librairies Java / Spring Boot
 
 ### o2springsecurity : 
 
-Version Stable active : 1.0.6
+Version Stable active : 1.0.7
 
 Version Développement active : 1.0.7-SNAPSHOT
  
