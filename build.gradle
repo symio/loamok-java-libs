@@ -137,4 +137,18 @@ subprojects {
             }
         }
     }
+
+
+    // Désactiver la publication si le projet n'a pas changé
+    afterEvaluate {
+        def skipPublish = project.hasProperty('checkChanges') && 
+                          !rootProject.ext.changedProjects.contains(project.path)
+        
+        if (skipPublish) {
+            println "Skipping publish for ${project.name} (no changes detected)"
+            tasks.withType(PublishToMavenRepository) {
+                enabled = false
+            }
+        }
+    }
 }

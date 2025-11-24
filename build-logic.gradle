@@ -1,0 +1,24 @@
+// build-logic.gradle
+def getChangedProjects() {
+    def changed = []
+    
+    try {
+        def gitDiff = 'git diff --name-only HEAD~1 HEAD'.execute()
+        gitDiff.waitFor()
+        def changedFiles = gitDiff.text.split('\n')
+        
+        subprojects.each { project ->
+            def projectPath = project.projectDir.name
+            if (changedFiles.any { it.startsWith("${projectPath}/") }) {
+                changed << project.path
+            }
+        }
+    } catch (Exception e) {
+        println "Could not detect changes, will publish all: ${e.message}"
+        return subprojects.collect { it.path }
+    }
+    
+    return changed
+}
+
+ext.changedProjects = getChangedProjects()

@@ -30,7 +30,7 @@ jobs:
         with:
           package-name: 'org.loamok.libs.o2springsecurity'
           package-type: 'maven'
-          # Garde les 2 dernières versions SNAPSHOT
+          # Garde les 3 dernières versions SNAPSHOT
           min-versions-to-keep: 3
           # Ne supprime que les SNAPSHOT
           version-pattern: '.*-SNAPSHOT$'
