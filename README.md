@@ -8,7 +8,7 @@ Bibliotheque de librairies Java / Spring Boot
 
 Version Stable active : 1.0.6
 
-Version Développement active : 1.0.6-SNAPSHOT
+Version Développement active : 1.0.7-SNAPSHOT
  
 - Authentification OAuth2 Client Credentials avec JWT
 - Gestion des utilisateurs (création, activation, désactivation)

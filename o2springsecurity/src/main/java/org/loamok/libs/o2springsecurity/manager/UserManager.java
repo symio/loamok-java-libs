@@ -29,6 +29,7 @@ import org.loamok.libs.o2springsecurity.exceptions.MissingFieldsException;
 import org.loamok.libs.o2springsecurity.repository.RoleRepository;
 import org.loamok.libs.o2springsecurity.repository.UserRepository;
 import org.loamok.libs.o2springsecurity.util.ClientSignatureUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,8 @@ public class UserManager implements UserService {
             = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&_\\-|~#])[A-Za-z\\d@$!%*?&_\\-|~#]{8,}$";
     private static final Pattern PATTERN = Pattern.compile(PASSWORD_PATTERN);
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Value("${loamok.security.jwt.secret}")
+    private String SECRET_KEY;
 
     private final EmailMessage messageGetter;
     private final UserRepository uR;
@@ -542,7 +545,8 @@ public class UserManager implements UserService {
         String res = null;
         if(checkPasswordCorrect(password, newPassword).equals(Boolean.TRUE)) {
             logger.info("passwords corrects !");
-            res = generateKey("##" + password + "##" + newPassword + "##");
+            String reversedPassword = new StringBuilder(newPassword).reverse().toString();
+            res = generateKey("##" + password + "#"+ SECRET_KEY +"#" + reversedPassword + "##");
         }
         
         logger.info("res : " + res);
