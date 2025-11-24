@@ -11,12 +11,15 @@ plugins {
 group = 'org.loamok.libs'
 description = 'Librairies Java Loamok'
 
-// Detecter les modules changes
+// ==========================================
+// 1. Détection des changements (Logique Git)
+// ==========================================
 def getChangedProjects() {
     def changed = []
     
+    // Si on ne demande pas le check (ex: build local), on considère que tout a changé
     if (!project.hasProperty('checkChanges')) {
-        println "Publishing all modules (checkChanges not enabled)"
+        println "Check changes disabled: enabling all modules."
         return subprojects.collect { it.path }
     }
     
@@ -25,38 +28,24 @@ def getChangedProjects() {
         gitDiff.waitFor()
         
         if (gitDiff.exitValue() != 0) {
-            println "Git diff failed, publishing all modules"
+            println "Git diff failed, defaulting to all modules."
             return subprojects.collect { it.path }
         }
         
         def changedFiles = gitDiff.text.split('\n')
         
-        println "Changed files:"
-        changedFiles.each { println "   - $it" }
-        
         subprojects.each { proj ->
             def projectPath = proj.projectDir.name
+            // On ne garde que si un fichier DANS le dossier du module a changé
             if (changedFiles.any { it.startsWith("${projectPath}/") }) {
-                println "${proj.name} has changes"
+                println "Changes detected in: ${proj.name}"
                 changed << proj.path
-            } else {
-                println "${proj.name} unchanged"
             }
         }
-        
-        if (changedFiles.any { it == 'build.gradle' || it == 'gradle.properties' || it == 'settings.gradle' }) {
-            println "Root build files changed, publishing all modules"
-            return subprojects.collect { it.path }
-        }
-        
     } catch (Exception e) {
         println "Could not detect changes: ${e.message}"
-        println "Publishing all modules as fallback"
-        return subprojects.collect { it.path }
-    }
-    
-    if (changed.isEmpty()) {
-        println "No module changes detected, but will publish all to be safe"
+        // Par sécurité en cas d'erreur technique git, on fallback sur tout
+        // Mais le filtrage afterEvaluate bloquera quand même templateempty
         return subprojects.collect { it.path }
     }
     
@@ -67,6 +56,9 @@ ext.changedProjects = getChangedProjects()
 
 println "Modules to publish: ${ext.changedProjects}"
 
+// ==========================================
+// 2. Configuration Commune (Repos)
+// ==========================================
 allprojects {
     // Commun à tous (racine + sous-projets)
     repositories {
@@ -147,6 +139,7 @@ subprojects {
         dependsOn classes
     }
     
+    // Désactiver bootJar car ce sont des libs
     tasks.whenTaskAdded { task ->
         if (task.name == 'bootJar') {
             task.enabled = false
@@ -176,7 +169,7 @@ subprojects {
                         license {
                             name = 'MIT License'
                             url = 'https://opensource.org/licenses/MIT'
-                        }
+    }
                     }
                     developers {
                         developer {
@@ -196,21 +189,37 @@ subprojects {
     }
     
 
-    // Désactiver la publication si le projet n'a pas changé
+    // ==========================================
+    // 4. LA MAGIE DU FILTRAGE (Correction)
+    // ==========================================
     afterEvaluate {
-        def shouldSkip = project.hasProperty('checkChanges') && 
-                         !rootProject.ext.changedProjects.contains(project.path)
+        // Liste noire stricte
+        def ignoredProjects = ['templateempty']
         
+        // Est-ce que le projet est dans la liste des changements détectés ?
+        def isChanged = rootProject.ext.changedProjects.contains(project.path)
+        
+        // Est-ce qu'on doit forcer l'arrêt ?
+        def shouldSkip = ignoredProjects.contains(project.name) || (project.hasProperty('checkChanges') && !isChanged)
+
         if (shouldSkip) {
-            println "Skipping publish for ${project.name} (no changes detected)"
-            tasks.withType(PublishToMavenRepository) {
-                enabled = false
+            if (ignoredProjects.contains(project.name)) {
+                println "FORCE SKIP: ${project.name} (Ignored project)"
+            } else {
+                println "SKIP: ${project.name} (No changes detected)"
             }
-            tasks.withType(PublishToMavenLocal) {
-                enabled = false
+            
+            // On ne retire pas le plugin (ça casse le build), on DÉSACTIVE les tâches
+            tasks.withType(PublishToMavenRepository).configureEach { 
+                enabled = false 
+                onlyIf { false } // Double sécurité
             }
-        } else if (project.hasProperty('checkChanges')) {
-            println "Will publish ${project.name}"
+            tasks.withType(PublishToMavenLocal).configureEach { 
+                enabled = false 
+                onlyIf { false }
+            }
+        } else {
+            println "PUBLISH: ${project.name} ready."
         }
     }
 }
