@@ -11,11 +11,67 @@ plugins {
 group = 'org.loamok.libs'
 description = 'Librairies Java Loamok'
 
+// Detecter les modules changes
+def getChangedProjects() {
+    def changed = []
+    
+    if (!project.hasProperty('checkChanges')) {
+        println "Publishing all modules (checkChanges not enabled)"
+        return subprojects.collect { it.path }
+    }
+    
+    try {
+        def gitDiff = 'git diff --name-only HEAD~1 HEAD'.execute()
+        gitDiff.waitFor()
+        
+        if (gitDiff.exitValue() != 0) {
+            println "Git diff failed, publishing all modules"
+            return subprojects.collect { it.path }
+        }
+        
+        def changedFiles = gitDiff.text.split('\n')
+        
+        println "Changed files:"
+        changedFiles.each { println "   - $it" }
+        
+        subprojects.each { proj ->
+            def projectPath = proj.projectDir.name
+            if (changedFiles.any { it.startsWith("${projectPath}/") }) {
+                println "${proj.name} has changes"
+                changed << proj.path
+            } else {
+                println "${proj.name} unchanged"
+            }
+        }
+        
+        if (changedFiles.any { it == 'build.gradle' || it == 'gradle.properties' || it == 'settings.gradle' }) {
+            println "Root build files changed, publishing all modules"
+            return subprojects.collect { it.path }
+        }
+        
+    } catch (Exception e) {
+        println "Could not detect changes: ${e.message}"
+        println "Publishing all modules as fallback"
+        return subprojects.collect { it.path }
+    }
+    
+    if (changed.isEmpty()) {
+        println "No module changes detected, but will publish all to be safe"
+        return subprojects.collect { it.path }
+    }
+    
+    return changed
+}
+
+ext.changedProjects = getChangedProjects()
+
+println "Modules to publish: ${ext.changedProjects}"
+
 allprojects {
     // Commun à tous (racine + sous-projets)
     repositories {
         mavenLocal()
-	mavenCentral()
+        mavenCentral()
         maven {
             name = "GitHubPackages-Loamok"
             url = uri("https://maven.pkg.github.com/symio/loamok-java-libs") 
@@ -90,6 +146,7 @@ subprojects {
         enabled = true
         dependsOn classes
     }
+    
     tasks.whenTaskAdded { task ->
         if (task.name == 'bootJar') {
             task.enabled = false
@@ -137,18 +194,23 @@ subprojects {
             }
         }
     }
-
+    
 
     // Désactiver la publication si le projet n'a pas changé
     afterEvaluate {
-        def skipPublish = project.hasProperty('checkChanges') && 
-                          !rootProject.ext.changedProjects.contains(project.path)
+        def shouldSkip = project.hasProperty('checkChanges') && 
+                         !rootProject.ext.changedProjects.contains(project.path)
         
-        if (skipPublish) {
+        if (shouldSkip) {
             println "Skipping publish for ${project.name} (no changes detected)"
             tasks.withType(PublishToMavenRepository) {
                 enabled = false
             }
+            tasks.withType(PublishToMavenLocal) {
+                enabled = false
+            }
+        } else if (project.hasProperty('checkChanges')) {
+            println "Will publish ${project.name}"
         }
     }
 }
