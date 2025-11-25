@@ -62,6 +62,5 @@ jobs:
           package-name: 'org.loamok.libs.${{ matrix.package }}'
           package-type: 'maven'
           min-versions-to-keep: 2
-          delete-only-pre-release-versions: false
           ignore-versions: '.*-SNAPSHOT$'
           token: ${{ secrets.GITHUB_TOKEN }}
