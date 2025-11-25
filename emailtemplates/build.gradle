@@ -7,7 +7,7 @@ plugins {
 }
 
 // --- Infos UNIQUES à cette lib ---
-version = '1.0.1-SNAPSHOT'
+version = '1.0.1'
 description = 'Librairie de gestion des templates E-mails'
 // --- Fin des infos uniques ---
 
