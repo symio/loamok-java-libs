@@ -1,48 +1,67 @@
 name: Cleanup Old Packages
 
 on:
-  # Nettoyage automatique après chaque publication
   workflow_run:
     workflows: ["Publish Package"]
     types:
       - completed
   
-  # Nettoyage manuel si besoin
   workflow_dispatch:
   
-  # Nettoyage hebdomadaire
   schedule:
-    - cron: '0 2 * * 0'  # Tous les dimanches à 2h du matin
+    - cron: '0 2 * * 0'
 
 jobs:
-  cleanup:
+  cleanup-snapshots:
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
     
+    strategy:
+      matrix:
+        package:
+          - emailtemplates
+          - o2springsecurity
+      fail-fast: false
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Delete old SNAPSHOT versions
+      - name: Delete old SNAPSHOT versions for ${{ matrix.package }}
         uses: actions/delete-package-versions@v5
         with:
-          package-name: 'org.loamok.libs.o2springsecurity'
+          package-name: 'org.loamok.libs.${{ matrix.package }}'
           package-type: 'maven'
-          # Garde les 3 dernières versions SNAPSHOT
           min-versions-to-keep: 3
-          # Ne supprime que les SNAPSHOT
-          version-pattern: '.*-SNAPSHOT$'
+          delete-only-pre-release-versions: true
           token: ${{ secrets.GITHUB_TOKEN }}
+  
+  cleanup-stable:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    needs: cleanup-snapshots
+    
+    strategy:
+      matrix:
+        package:
+          - emailtemplates
+          - o2springsecurity
+      fail-fast: false
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       
-      - name: Delete old stable versions
+      - name: Delete old stable versions for ${{ matrix.package }}
         uses: actions/delete-package-versions@v5
         with:
-          package-name: 'org.loamok.libs.o2springsecurity'
+          package-name: 'org.loamok.libs.${{ matrix.package }}'
           package-type: 'maven'
-          # Garde la dernière version stable
           min-versions-to-keep: 2
-          # Ne supprime que les versions stables (sans -SNAPSHOT)
-          version-pattern: '^(?!.*-SNAPSHOT).*$'
+          delete-only-pre-release-versions: false
+          ignore-versions: '.*-SNAPSHOT$'
           token: ${{ secrets.GITHUB_TOKEN }}
